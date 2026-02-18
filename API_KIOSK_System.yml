@@ -1,0 +1,2148 @@
+openapi: 3.0.0
+info:
+  title: Kiosk API Document
+  description: API for Kiosk System.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5002
+    description: Local Server Development
+
+  - url: http://35.247.181.56:5002
+    description: Development Server
+    
+
+paths:
+
+  #kiosk system
+  /api-kiosk/userget:
+    post:
+      summary: Get Data user
+      description: Get Data a user.
+      tags:
+        - Kiosk System
+      security:
+        - api_key: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                  description: ค้นหา บัตรประชาชน หรือ พาสปอร์ต
+              example:
+                searchUser: "1814445597091"
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: ข้อมูลผู้ใช้งาน
+                    properties:
+                      id:
+                        type: string
+                        description: รหัสผู้ใช้งาน
+                      routerid:
+                        type: string
+                        description: รหัส Router
+                      ugroupid:
+                        type: string
+                        description: รหัสกลุ่มผู้ใช้งาน
+                      visitortype:
+                        type: string
+                        description: ประเภทผู้เข้าใช้งาน
+                      name:
+                        type: string
+                        description: ชื่อผู้ใช้งาน
+                      surname:
+                        type: string
+                        description: นามสกุลผู้ใช้งาน
+                      user:
+                        type: string
+                        description: บัญชีผู้ใช้
+                      password:
+                        type: string
+                        description: รหัสผ่าน
+                      idcardnumber:
+                        type: string
+                        description: เลขบัตรประชาชน
+                      passportnumber:
+                        type: string
+                        description: เลขบัตรพาสปอร์ต
+                      phone:
+                        type: string
+                        description: เบอร์โทรศัพท์
+                      expiredate:
+                        type: string
+                        description: วันที่หมดอายุใช้งาน
+                      lastactivedate:
+                        type: string
+                        description: วันที่เข้าใช้งานล่าสุด
+              example:
+                data:
+                  id: "06d4a3d2-86ab-45a5-9f1c-3d943326c690"
+                  routerid: "0b09624e-4837-44d3-87df-8183ca53569d"
+                  ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
+                  visitortype: "ผู้มาติดต่อราชการ"
+                  name: "N11"
+                  surname: "SN11"
+                  user: "U11"
+                  password: "P11"
+                  idcardnumber: "NNC11"
+                  passportnumber: "PPC11"
+                  phone: "0987894561"
+                  expiredate: "2025-07-11"
+                  lastactivedate: "2025-12-03 10:44:29"
+        "400":
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Error message
+                example:
+                  message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+  /api-kiosk/userscreate:
+    post:
+      summary: Add new user
+      description: Create a new user.
+      tags:
+        - Kiosk System
+      security:
+        - api_key: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                visitortype:
+                  type: string
+                  description: ประเภทผู้เข้าใช้งาน
+                name:
+                  type: string
+                  description: ชื่อผู้ใช้งาน
+                surname:
+                  type: string
+                  description: นามสกุลผู้ใช้งาน
+                password:
+                  type: string
+                  description: รหัสผ่าน
+                idcardnumber:
+                  type: string
+                  description: เลขบัตรประชาชน
+                passportnumber:
+                  type: string
+                  description: เลขบัตรพาสปอร์ต
+                phone:
+                  type: string
+                  description: เบอร์โทรศัพท์
+                expiredate:
+                  type: string
+                  description: วันที่หมดอายุใช้งาน
+              example:
+                visitortype: "ผู้มาติดต่อราชการ"
+                name: "N12"
+                surname: "SN12"
+                password: "P12"
+                idcardnumber: "NNC12"
+                passportnumber: "PPC12"
+                phone: "0987894562"
+                expiredate: "2025-12-03"
+
+      responses:
+        "200":
+          description: User Add successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ข้อความอธิบายสถานะ
+              example:
+                message: "User Add successful"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+  /api-kiosk/kioskspecifications:
+    get:
+      summary: Get Data specifications
+      description: Data specifications.
+      tags:
+        - Kiosk System
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ssid:
+                    type: string
+                    description: รหัส WIFI
+                  description:
+                    type: string
+                    description: รายละเอียด PDPA
+              example:
+                ssid: "KIOSK"
+                description: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล...."
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+        
+
+  # Login
+  /api/login:
+    post:
+      summary: Login
+      description: User login.
+      tags:
+        - Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: บัญชีผู้ใช้
+                password:
+                  type: string
+                  description: รหัสผ่าน
+              example:
+                username: "admin"
+                password: "0000"
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token
+                  message:
+                    type: string
+                    description: Login successfully
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjU2NjY5NjY4LCJleHAiOjE2NTY3MDk4Njh9.YrE7ZJdG7j5dF1oK7Kv2mEg2QZVY8r8v0X9Y6t2lN4g
+                message: Login successfully
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: Invalid request
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: Unauthorized
+  
+  /api/checklogin:
+    get:
+      summary: Check login
+      description: Check if the user is logged in.
+      tags:
+        - Login
+      security:
+        - api_key: []
+        - Authorization: []
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: User is logged in
+              example:
+                message: User is logged in
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: Invalid request
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: Unauthorized
+
+  /api/logout:
+    get:
+      summary: Logout
+      description: User logout.
+      tags:
+        - Login
+      security:
+        - api_key: []
+        - Authorization: []
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Logout successfully
+              example:
+                message: Logout successfully
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: Invalid request
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: Unauthorized
+
+
+  # Dashboard
+  /api/dashboardlistall:
+    get:
+      summary: Dashboard list
+      description: Retrieve a list of dashboards.
+      tags:
+        - Dashboard
+      security:
+        - api_key: []
+        - Authorization: []
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    description: จํานวนรายการ
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties: 
+                        numberusers:
+                          type: object
+                          description: จำนวนผู้ใช้งาน
+                          properties:
+                            period:
+                              type: string
+                              description: ช่วงเวลา
+                            countnationalidcard:
+                              type: number
+                              description: จำนวนเลขบัตรประชาชน
+                            countpassportcard:
+                              type: number
+                              description: จำนวนเลขบัตรพาสปอร์ต
+                        usertype:
+                          type: object
+                          description: ประเภทผู้ใช้งาน
+                          properties:
+                            period:
+                              type: string
+                              description: ช่วงเวลา
+                            countnationalidcard:
+                              type: number
+                              description: จำนวนเลขบัตรประชาชน
+                            countpassportcard:
+                              type: number
+                              description: จำนวนเลขบัตรพาสปอร์ต
+                        users:
+                          type: object
+                          description: ข้อมูลผู้ใช้งาน
+                          properties:
+                            period:
+                              type: string
+                              description: ช่วงเวลา
+                            total:
+                              type: number
+                            result:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                    description: รหัสผู้ใช้งาน
+                                  routerid:
+                                    type: string
+                                    description: รหัส Router
+                                  ugroupid:
+                                    type: string
+                                    description: รหัสกลุ่มผู้ใช้งาน
+                                  visitortype:
+                                    type: string
+                                    description: ประเภทผู้เข้าใช้งาน
+                                  groupname:
+                                    type: string
+                                    description: ชื่อกลุ่มผู้ใช้งาน
+                                  name:
+                                    type: string
+                                    description: ชื่อผู้ใช้งาน
+                                  surname:
+                                    type: string
+                                    description: นามสกุลผู้ใช้งาน
+                                  password:
+                                    type: string
+                                    description: รหัสผ่าน
+                                  idcardnumber:
+                                    type: string
+                                    description: เลขเลขบัตรประชาชน
+                                  passportnumber:
+                                    type: string
+                                    description: เลขเลขบัตรพาสปอร์ต
+                                  phone:
+                                    type: string
+                                    description: เบอร์โทรศัพท์
+                                  lastactivedate:
+                                    type: string
+                                    description: วันที่เข้าใช้งานล่าสุด
+                                  expiredate:
+                                    type: string
+                                    description: วันที่หมดอายุใช้งาน
+              example:
+                numberusers:
+                  period: "today"
+                  countnationalidcard: 10
+                  countpassportcard: 5
+                usertype:
+                  period: "today"
+                  countnationalidcard: 10
+                  countpassportcard: 5
+                users:
+                  period: "today"
+                  total: 10
+                  result:
+                    [
+                      {
+                        "id": "06d4a3d2-86ab-45a5-9f1c-3d943326c690",
+                        "routerid": "0b09624e-4837-44d3-87df-8183ca53569d",
+                        "ugroupid": "ec80a622-7522-4561-84e7-7d8b7351ddde",
+                        "visitortype": "V11",
+                        "groupname": "CCC0012",
+                        "name": "N11",
+                        "surname": "SN11",
+                        "password": "P11",
+                        "idcardnumber": "NNC11",
+                        "passportnumber": "PPC11",
+                        "phone": "P11",
+                        "lastactivedate": "2025-07-12 10:44:29",
+                        "expiredate": "2025-07-11",
+                      },
+                      {
+                        "id": "01fc1549-9793-4373-85d7-7cce74eeb4ad",
+                        "routerid": "4bb65d5b-d936-4e20-b5a1-c8302ec3dea1",
+                        "ugroupid": "ec80a622-7522-4561-84e7-7d8b7351ddde",
+                        "visitortype": "V12",
+                        "groupname": "CCC0012",
+                        "name": "N12",
+                        "surname": "SN12",
+                        "password": "P12",
+                        "idcardnumber": "NNC12",
+                        "passportnumber": "PPC12",
+                        "phone": "P12",
+                        "lastactivedate": "2025-07-12 10:44:29",
+                        "expiredate": "2025-07-11",
+                      },
+                    ]
+                    
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+
+  /api/dashboardnumberusers:
+    get:
+      summary: Number of users
+      description: Retrieve the number of users.
+      tags:
+        - Dashboard
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - name: period
+          in: query
+          required: false
+          description: ช่วงเวลา
+          schema:
+            type: string
+            enum:
+              - today
+              - thisweek
+              - thismonth
+              - thisyear
+            default: today
+            # example: today
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                description: จํานวนผู้ใช้งาน
+                properties:
+                  period:
+                    type: string
+                    description: ช่วงเวลา
+                  countnationalidcard:
+                    type: number
+                    description: จำนวนเลขบัตรประชาชน
+                  countpassportcard:
+                    type: number
+                    description: จำนวนเลขบัตรพาสปอร์ต
+              example:
+                period: "today"
+                countnationalidcard: 10
+                countpassportcard: 5  
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+  
+  /api/dashboardusertype:
+    get:
+      summary: User type
+      description: Retrieve the user type.
+      tags:
+        - Dashboard
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - name: period
+          in: query
+          required: false
+          description: ช่วงเวลา
+          schema:
+            type: string
+            enum:
+              - today
+              - thisweek
+              - thismonth
+              - thisyear
+            default: today
+            # example: today
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                description: ประเภทผู้ใช้งาน
+                properties:
+                  period:
+                    type: string
+                    description: ช่วงเวลา
+                  countnationalidcard:
+                    type: number
+                    description: จำนวนเลขบัตรประชาชน
+                  countpassportcard:
+                    type: number
+                    description: จำนวนเลขบัตรพาสปอร์ต
+              example:
+                period: "today"
+                countnationalidcard: 10
+                countpassportcard: 5  
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+
+  /api/dashboardusers:
+    get:
+      summary: Users
+      description: Retrieve the users.
+      tags:
+        - Dashboard
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - name: period
+          in: query
+          required: false
+          description: ช่วงเวลา
+          schema:
+            type: string
+            enum:
+              - today
+              - thisweek
+              - thismonth
+              - thisyear
+            default: today
+            # example: today
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                description: ข้อมูลผู้ใช้งาน
+                properties:
+                  period:
+                    type: string
+                    description: ช่วงเวลา
+                  total:
+                    type: number
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: รหัสผู้ใช้งาน
+                        routerid:
+                          type: string
+                          description: รหัส Router
+                        ugroupid:
+                          type: string
+                          description: รหัสกลุ่มผู้ใช้งาน
+                        visitortype:
+                          type: string
+                          description: ประเภทผู้เข้าใช้งาน
+                        groupname:
+                          type: string
+                          description: ชื่อกลุ่มผู้ใช้งาน
+                        name:
+                          type: string
+                          description: ชื่อผู้ใช้งาน
+                        surname:
+                          type: string
+                          description: นามสกุลผู้ใช้งาน
+                        password:
+                          type: string
+                          description: รหัสผ่าน
+                        idcardnumber:
+                          type: string
+                          description: เลขบัตรประชาชน
+                        passportnumber:
+                          type: string
+                          description: เลขบัตรพาสปอร์ต
+                        phone:
+                          type: string
+                          description: เบอร์โทรศัพท์
+                        lastactivedate:
+                          type: string
+                          description: วันที่เข้าใช้งานล่าสุด
+                        expiredate:
+                          type: string
+                          description: วันที่หมดอายุใช้งาน
+
+              example:
+                period: "today"
+                total: 10
+                result:
+                  [
+                    {
+                      "id": "06d4a3d2-86ab-45a5-9f1c-3d943326c690",
+                      "routerid": "0b09624e-4837-44d3-87df-8183ca53569d",
+                      "ugroupid": "ec80a622-7522-4561-84e7-7d8b7351ddde",
+                      "visitortype": "V11",
+                      "groupname": "CCC0012",
+                      "name": "N11",
+                      "surname": "SN11",
+                      "password": "P11",
+                      "idcardnumber": "NNC11",
+                      "passportnumber": "PPC11",
+                      "phone": "P11",
+                      "lastactivedate": "2025-07-12 10:44:29",
+                      "expiredate": "2025-07-11",
+                    },
+                    {
+                      "id": "01fc1549-9793-4373-85d7-7cce74eeb4ad",
+                      "routerid": "4bb65d5b-d936-4e20-b5a1-c8302ec3dea1",
+                      "ugroupid": "ec80a622-7522-4561-84e7-7d8b7351ddde",
+                      "visitortype": "V12",
+                      "groupname": "CCC0012",
+                      "name": "N12",
+                      "surname": "SN12",
+                      "password": "P12",
+                      "idcardnumber": "NNC12",
+                      "passportnumber": "PPC12",
+                      "phone": "P12",
+                      "lastactivedate": "2025-07-12 10:44:29",
+                      "expiredate": "2025-07-11",
+                    },
+                  ]
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+
+
+  # users customers
+  /api/groupuserslistall:
+    get:
+      summary: Group users list
+      description: Retrieve a list of group users.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: ค้นหา ชื่อกลุ่มผู้ใช้
+          schema:
+            type: string
+            # default: ""
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    description: จํานวนรายการ
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ugroupid:
+                          type: string
+                          description: รหัสกลุ่มผู้ใช้งาน
+                        groupname:
+                          type: string
+                          description: ชื่อกลุ่มผู้ใช้งาน
+                        duration:
+                          type: string
+                          description: ระยะเวลาใช้งาน
+                        create_at:
+                          type: string
+                          description: วันที่สร้างกลุ่มผู้ใช้งาน
+              example:
+                total: 2
+                result: 
+                  [
+                    {
+                      ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde",
+                      groupname: "CCC0012",
+                      duration: "03:00",
+                      create_at: "2025-07-12 10:44:29",
+                    },
+                    {
+                      ugroupid: "ec80a622-7522-4561-84e7-7d8b735sdsdw",
+                      groupname: "CCC0013",
+                      duration: "03:00",
+                      create_at: "2025-07-12 10:50:29",
+                    },
+                  ]
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+
+  /api/groupuserscreate:
+    post:
+      summary: Add new group user
+      description: Create a new group user.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                groupname:
+                  type: string
+                  description: ชื่อกลุ่มผู้ใช้งาน
+                duration:
+                  type: string
+                  description: ระยะเวลาใช้งาน
+              example:
+                groupname: "CCC0012"
+                duration: "03:00"
+
+      responses:
+        "200":
+          description: GroupUsers Add successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ข้อความอธิบายสถานะ
+              example:
+                message: "GroupUsers Add successful"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+
+  /api/groupusersupdate:
+    put:
+      summary: Update group user
+      description: Update a group user.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ugroupid:
+                  type: string
+                  description: รหัสกลุ่มผู้ใช้งาน
+                groupname:
+                  type: string
+                  description: ชื่อกลุ่มผู้ใช้งาน
+                duration:
+                  type: string
+                  description: ระยะเวลาใช้งาน
+              example:
+                ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
+                groupname: "CCC0012"
+                duration: "03:00"
+
+      responses:
+        "200":
+          description: GroupUsers Update successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ข้อความอธิบายสถานะ
+              example:
+                message: "GroupUsers Update successful"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+
+  /api/groupusersdelete:
+    delete:
+      summary: Delete group user
+      description: Delete a group user.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ugroupid:
+                  type: string
+                  description: รหัสกลุ่มผู้ใช้งาน
+              example:
+                ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
+      responses:
+        "200":
+          description: GroupUsers Delete successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ข้อความอธิบายสถานะ
+              example:
+                message: "GroupUsers Delete successful"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+
+  /api/userslistall:
+    get:
+      summary: Users list
+      description: Retrieve a list of users.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: ค้นหา ชื่อกลุ่มผู้ใช้ ,ชื่อผู้ใช้งาน ,นามสกุล ,หรือเลขบัตรประชาชน ,หรือเลขบัตรพาสปอร์ต ,เบอร์โทรศัพท์ 
+          schema:
+            type: string
+            # default: ""
+            # example: search
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    description: จํานวนรายการ
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: รหัสผู้ใช้งาน
+                        routerid:
+                          type: string
+                          description: รหัส Router
+                        ugroupid:
+                          type: string
+                          description: รหัสกลุ่มผู้ใช้งาน
+                        groupname:
+                          type: string
+                          description: ชื่อกลุ่มผู้ใช้งาน
+                        visitortype:
+                          type: string
+                          description: ประเภทผู้เข้าใช้งาน
+                        name:
+                          type: string
+                          description: ชื่อผู้ใช้งาน
+                        surname:
+                          type: string
+                          description: นามสกุลผู้ใช้งาน
+                        password:
+                          type: string
+                          description: รหัสผ่าน
+                        idcardnumber:
+                          type: string
+                          description: เลขบัตรประชาชน
+                        passportnumber:
+                          type: string
+                          description: เลขบัตรพาสปอร์ต
+                        phone:
+                          type: string
+                          description: เบอร์โทรศัพท์
+                        create_at:
+                          type: string
+                          description: วันที่ขอเข้าใช้งาน
+                        expirationdate:
+                          type: string
+                          description: วันที่หมดอายุใช้งาน
+                        duration:
+                          type: string
+                          description: ระยะเวลาใช้งาน
+              example:
+                total: 1
+                result:
+                  [
+                    {
+                      id: "01fc1549-9793-4373-85d7-7cce74eeb4ad",
+                      routerid: "4bb65d5b-d936-4e20-b5a1-c8302ec3dea1",
+                      ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde",
+                      groupname: "CCC0012",
+                      visitortype: "ผู้มาติดต่อราชการ",
+                      name: "N12",
+                      surname: "SN12",
+                      password: "P12",
+                      idcardnumber: "NNC12",
+                      passportnumber: "PPC12",
+                      phone: "P12",
+                      create_at: "2025-07-12 10:44:29",
+                      expirationdate: "2025-07-11",
+                      duration: "03:00",
+                    },
+                  ]
+
+  /api/userscreate:
+    post:
+      summary: Add new user
+      description: Create a new user.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                routerid:
+                  type: string
+                  description: รหัส Router
+                ugroupid:
+                  type: string
+                  description: รหัสกลุ่มผู้ใช้งาน
+                visitortype:
+                  type: string
+                  description: ประเภทผู้เข้าใช้งาน
+                name:
+                  type: string
+                  description: ชื่อผู้ใช้งาน
+                surname:
+                  type: string
+                  description: นามสกุลผู้ใช้งาน
+                password:
+                  type: string
+                  description: รหัสผ่าน
+                idcardnumber:
+                  type: string
+                  description: เลขบัตรประชาชน
+                passportnumber:
+                  type: string
+                  description: เลขบัตรพาสปอร์ต
+                phone:
+                  type: string
+                  description: เบอร์โทรศัพท์
+                expiredate:
+                  type: string
+                  description: วันที่หมดอายุใช้งาน
+              example:
+                routerid: "4bb65d5b-d936-4e20-b5a1-c8302ec3dea1"
+                ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
+                visitortype: "ผู้มาติดต่อราชการ"
+                name: "N12"
+                surname: "SN12"
+                password: "P12"
+                idcardnumber: "NNC12"
+                passportnumber: "PPC12"
+                phone: "098XXXXXXX"
+                expiredate: "2025-07-11"
+
+      responses:
+        "200":
+          description: User Add successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ข้อความอธิบายสถานะ
+              example:
+                message: "User Add successful"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+  /api/usersimport:
+    post:
+      summary: Import users
+      description: Import a users.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ugroupid:
+                  type: string
+                  description: รหัสกลุ่มผู้ใช้งาน
+                users:
+                  type: array
+                  description: ข้อมูลผู้ใช้งาน
+                  items:
+                    type: object
+                    properties:
+                      routerid:
+                        type: string
+                        description: รหัส Router
+                      ugroupid:
+                        type: string
+                        description: รหัสกลุ่มผู้ใช้งาน
+                      visitortype:
+                        type: string
+                        description: ประเภทผู้เข้าใช้งาน
+                      name:
+                        type: string
+                        description: ชื่อผู้ใช้งาน
+                      surname:
+                        type: string
+                        description: นามสกุลผู้ใช้งาน
+                      password:
+                        type: string
+                        description: รหัสผ่าน
+                      idcardnumber:
+                        type: string
+                        description: เลขบัตรประชาชน
+                      passportnumber:
+                        type: string
+                        description: เลขบัตรพาสปอร์ต
+                      phone:
+                        type: string
+                        description: เบอร์โทรศัพท์
+                      expiredate:
+                        type: string
+                        description: วันที่หมดอายุใช้งาน
+            example:
+              ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
+              users:
+                - routerid: "4bb65d5b-d936-4e20-b5a1-c8302ec3dea1"
+                  ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
+                  visitortype: "V12"
+                  name: "N12"
+                  surname: "SN12"
+                  password: "P12"
+                  idcardnumber: "NNC12"
+                  passportnumber: "PPC12"
+                  phone: "098XXXXXXX"
+                  expiredate: "2025-07-11"
+                - routerid: "4bb65d5b-d936-4e20-b5a1-c8302ec3dea2"
+                  ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddd2"
+                  visitortype: "V12"
+                  name: "N13"
+                  surname: "SN13"
+                  password: "P13"
+                  idcardnumber: "NNC13"
+                  passportnumber: "PPC13"
+                  phone: "098XXXXXXX"
+                  expiredate: "2025-07-11"
+                      
+      responses:
+        "200":
+          description: User import successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ข้อความอธิบายสถานะ
+              example:
+                message: "Imported 1 users successfully."
+
+  /api/usersupdate:
+    put:
+      summary: Update user
+      description: Update a user.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: รหัสผู้ใช้งาน
+                routerid:
+                  type: string
+                  description: รหัส Router
+                ugroupid:
+                  type: string
+                  description: รหัสกลุ่มผู้ใช้งาน
+                visitortype:
+                  type: string
+                  description: ประเภทผู้เข้าใช้งาน
+                name:
+                  type: string
+                  description: ชื่อผู้ใช้งาน
+                surname:
+                  type: string
+                  description: นามสกุลผู้ใช้งาน
+                password:
+                  type: string
+                  description: รหัสผ่าน
+                idcardnumber:
+                  type: string
+                  description: เลขบัตรประชาชน
+                passportnumber:
+                  type: string
+                  description: เลขบัตรพาสปอร์ต
+                phone:
+                  type: string
+                  description: เบอร์โทรศัพท์ 
+                expiredate:
+                  type: string
+                  description: วันที่หมดอายุใช้งาน
+              example:
+                id: "01fc1549-9793-4373-85d7-7cce74eeb4ad"
+                routerid: "4bb65d5b-d936-4e20-b5a1-c8302ec3dea1"
+                ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
+                visitortype: "ผู้มาติดต่อราชการ"
+                name: "N12"
+                surname: "SN12"
+                password: "P12"
+                idcardnumber: "NNC12"
+                passportnumber: "PPC12"
+                phone: "098XXXXXXX"
+                expiredate: "2025-07-11"
+
+      responses:
+        "200":
+          description: User Update successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ข้อความอธิบายสถานะ
+              example:
+                message: "User Update successful"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+              example:
+                error: "Unauthorized"
+
+  /api/usersdelete:
+    delete:
+      summary: Delete user
+      description: Delete a user.
+      tags:
+        - Users
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: รหัสผู้ใช้งาน
+              example:
+                id: "01fc1549-9793-4373-85d7-7cce74eeb4ad"
+
+      responses:
+        "200":
+          description: User Delete successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ข้อความอธิบายสถานะ
+              example:
+                message: "User Delete successful"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+
+
+
+  # report
+  /api/reportlistall:
+    get:
+      summary: Report list
+      description: Retrieve a list of reports.
+      tags:
+        - Report
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - name: search
+          in: query
+          description: ค้นหา ชื่อกลุ่มผู้ใช้งาน ,ชื่อผู้ใช้งาน ,นามสกุล ,เลขบัตรประชาชน ,เลขบัตรพาสปอร์ต ,เบอร์โทรศัพท์
+          required: false
+          schema:
+            type: string
+            # default: ""
+            # example: search
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    description: จํานวนรายการ
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: รหัสรายงาน
+                        routerid:
+                          type: string
+                          description: รหัส Router
+                        ugroupid:
+                          type: string
+                          description: รหัสกลุ่มผู้ใช้งาน
+                        create_at:
+                          type: string
+                          description: วันที่ขอเข้าใช้งาน
+                        visitortype:
+                          type: string
+                          description: ประเภทผู้เข้าใช้งาน
+                        groupname:
+                          type: string
+                          description: ชื่อกลุ่มผู้ใช้งาน
+                        name:
+                          type: string
+                          description: ชื่อผู้ใช้งาน
+                        surname:
+                          type: string
+                          description: นามสกุลผู้ใช้งาน
+                        password:
+                          type: string
+                          description: รหัสผ่าน
+                        idcardnumber:
+                          type: string
+                          description: เลขบัตรประชาชน
+                        passportnumber:
+                          type: string
+                          description: เลขบัตรพาสปอร์ต
+                        phone:
+                          type: string
+                          description: เบอร์โทรศัพท์
+                        lastactivedate:
+                          type: string
+                          description: วันที่เข้าใช้งานล่าสุด
+                        expiredate:
+                          type: string
+                          description: วันที่หมดอายุใช้งาน
+                        duration:
+                          type: string
+                          description: ระยะเวลาใช้งาน
+
+              example:
+                total: 1
+                result:
+                  - id: "01fc1549-9793-4373-85d7-7cce74eeb4ad"
+                    routerid: "4bb65d5b-d936-4e20-b5a1-c8302ec3dea1"
+                    ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
+                    create_at: "2023-01-01 10:00:00"
+                    visitortype: "V12"
+                    groupname: "CCC0012"
+                    name: "N12"
+                    surname: "S12"
+                    password: "P12"
+                    idcardnumber: "NNC12"
+                    passportnumber: "PPC12"
+                    phone: "0123456789"
+                    lastactivedate: "2023-01-01 10:00:00"
+                    expiredate: "2023-01-01"
+                    duration: "03:00"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+
+  # event log
+  /api/eventloglistall:
+    get: 
+      summary: Event log list
+      description: Retrieve a list of event logs.
+      tags:
+        - Event log
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - in: query
+          name: search
+          description: คันหา ชื่อผู้ใช้งาน ,ชื่อบัญชีผู้ใช้งาน ,สิทธิ์การใช้งาน ,การดำเนินการ
+          schema:
+            type: string
+            # default: ""
+            # example: search
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    description: จํานวนรายการ
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: รหัสการดำเนินการ
+                        userid:
+                          type: string
+                          description: รหัสผู้ใช้งาน
+                        create_at:
+                          type: string
+                          description: วันที่ดำเนินการ
+                        name:
+                          type: string
+                          description: ชื่อผู้ดูแลระบบ
+                        level:
+                          type: string
+                          description: สิทธิ์การใช้งาน
+                        remark:
+                          type: string
+                          description: การดำเนินการ
+              example:
+                total: 1
+                result:
+                  - id: "01fc1549-9793-4373-85d7-7cce74eeb4ad"
+                    userid: "01fc1549-9793-4373-85d7-7cce74eeb4ad"
+                    create_at: "2023-01-01 10:00:00"
+                    name: "Smart"
+                    level: "Admin"
+                    remark: "เข้าสู่ระบบ"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+
+  # Administrator
+  /api/administratorlistall:
+    get:
+      summary: Administrator list
+      description: Retrieve a list of administrators.
+      tags:
+        - Administrator
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - in: query
+          name: search
+          description: คันหา ชื่อผู้ใช้งาน ,ชื่อบัญชีผู้ใช้งาน ,สิทธิ์การใช้งาน
+          schema:
+            type: string
+            # default: ""
+            # example: search
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    description: จํานวนรายการ
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userid:
+                          type: string
+                          description: รหัสผู้ใช้งาน
+                        name:
+                          type: string
+                          description: ชื่อผู้ใช้งาน
+                        username:
+                          type: string
+                          description: ชื่อบัญชีผู้ใช้งาน
+                        password:
+                          type: string
+                          description: รหัสผ่าน
+                        level:
+                          type: string
+                          description: สิทธิ์การใช้งาน
+                        create_at:
+                          type: string
+                          description: วันที่สร้างบัญชีผู้ใช้งาน
+                        
+              example:
+                total: 1
+                result:
+                  - userid: "01fc1549-9793-4373-85d7-7cce74eeb4ad"
+                    name: "Smart"
+                    username: "smart"
+                    password: "smart123"
+                    level: "Admin"
+                    create_at: "2023-01-01 10:00:00"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+  
+  /api/administratorcreate:
+    post:
+      summary: Add new administrator
+      description: Create a new administrator.
+      tags:
+        - Administrator
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: ชื่อผู้ใช้งาน
+                username:
+                  type: string
+                  description: ชื่อบัญชีผู้ใช้งาน
+                password:
+                  type: string
+                  description: รหัสผ่าน
+                level:
+                  type: string
+                  description: สิทธิ์การใช้งาน
+            example:
+              name: "Smart"
+              username: "smart"
+              password: "smart123"
+              level: "Admin"
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+              example:
+                message: "Administrator Add successful"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+  /api/administratorupdate:
+    put:
+      summary: Update administrator
+      description: Update an administrator.
+      tags:
+        - Administrator
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  description: รหัสผู้ใช้งาน
+                name:
+                  type: string
+                  description: ชื่อผู้ใช้งาน
+                username:
+                  type: string
+                  description: ชื่อบัญชีผู้ใช้งาน
+                password:
+                  type: string
+                  description: รหัสผ่าน
+                level:
+                  type: string
+                  description: สิทธิ์การใช้งาน
+            example:
+              userid: "01fc1549-9793-4373-85d7-7cce74eeb4ad"
+              name: "Smart"
+              username: "smart"
+              password: "smart123"
+              level: "Admin"
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+              example:
+                message: "Administrator Update successful"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+  /api/administratordelete:
+    delete:
+      summary: Delete administrator
+      description: Delete an administrator.
+      tags:
+        - Administrator
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  description: รหัสผู้ใช้งาน
+            example:
+              userid: "01fc1549-9793-4373-85d7-7cce74eeb4ad"
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+              example:
+                message: "Administrator Delete successful"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      description: API Key สำหรับ Authentication
+      in: header
+      name: X-API-KEY
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT header
+      description: JWT Token สำหรับยืนยันการเข้าใช้งาน
+
+security:
+  - api_key: []
+  - Authorization: []
