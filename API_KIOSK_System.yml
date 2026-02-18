@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 servers:
 
-  - url: http://10.10.46.4:443
+  - url: https://10.10.46.4:443
     description: Development Server
   # - url: http://localhost:5002
   #   description: Local Server Development
