@@ -4,11 +4,14 @@ info:
   description: API for Kiosk System.
   version: 1.0.0
 servers:
-  - url: http://localhost:5002
-    description: Local Server Development
 
-  - url: http://35.247.181.56:5002
+  - url: http://10.10.46.4:443
     description: Development Server
+  # - url: http://localhost:5002
+  #   description: Local Server Development
+
+  # - url: http://35.247.181.56:5002
+  #   description: Development Server
     
 
 paths:
