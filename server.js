@@ -1,3 +1,4 @@
+const https = require('https'); // HTTPS module for making secure requests
 const express = require("express"); // Express web framework
 const swaggerUi = require("swagger-ui-express"); // Swagger UI middleware
 const YAML = require('yamljs'); // YAML parser for Swagger
@@ -11,6 +12,12 @@ require("dotenv").config(); // Load environment variables
 
 // Use the XML body parser middleware
 app.use(xmlparser());
+
+const options = {
+  key: fs.readFileSync(path.join(__dirname, 'private.key')),
+  cert: fs.readFileSync(path.join(__dirname, 'certificate.crt'))
+};
+
 
 const swaggerDocument = YAML.load('./API_KIOSK_System.yml');
 
@@ -183,6 +190,22 @@ app.get("/", (req, res) => {
 
 // Start the server
 const port = process.env.Port;
-app.listen(port, function () {
-    console.log(`✅ Server is running on http://localhost:${port}`);
+
+const server = https.createServer(options, app);
+
+server.listen(port, () => {
+    console.log(`🚀 Secure Server is running on https://localhost:${port}`);
 });
+
+server.on('error', (e) => {
+  if (e.code === 'EADDRINUSE') {
+    console.error(`❌ Error: Port ${port} is already in use by another service (likely IIS or Skype).`);
+  } else if (e.code === 'EACCES') {
+    console.error(`❌ Error: You must run Terminal as Administrator to use port ${port}.`);
+  } else {
+    console.error(e);
+  }
+});
+// app.listen(port, function () {
+//     console.log(`✅ Server is running on http://localhost:${port}`);
+// });
