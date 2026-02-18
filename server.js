@@ -7,6 +7,8 @@ const apiKiosk = require("./router/kiosk"); // Kiosk routes
 const app = express(); // Create Express app
 const cors = require("cors"); // CORS middleware
 const xmlparser = require('express-xml-bodyparser');
+const fs = require('fs');
+const path = require('path');
 
 require("dotenv").config(); // Load environment variables
 
