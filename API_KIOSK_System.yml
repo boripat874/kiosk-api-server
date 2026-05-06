@@ -1760,7 +1760,7 @@ paths:
         - api_key: []
         - Authorization: []
       parameters:
-        - name: user
+        - name: id
           in: query
           required: false
           description: ชื่อบัญชีผู้ใช้งาน
