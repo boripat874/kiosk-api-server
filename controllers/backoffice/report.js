@@ -331,78 +331,85 @@ exports.reportUserDetails = async (req, res) => {
                     }else{
                         result = [];
                     }
-                    
-
-                    const reportlistall = await db("registerinfo") // 1. Start query on 'registerinfo' table
-                            .select({
-                                id: "registerinfo.id",
-                                routerid: "registerinfo.routerid",
-                                ugroupid: "registerinfo.ugroupid",
-                                create_at: "registerinfo.create_at",
-                                visitortype: "registerinfo.visitortype",
-                                groupname: "registergroupinfo.groupname",
-                                name: "registerinfo.name",
-                                surname: "registerinfo.surname",
-                                user: "registerinfo.user",
-                                password: "registerinfo.password",
-                                idcardnumber: "registerinfo.idcardnumber",
-                                passportnumber: "registerinfo.passportnumber",
-                                phone: "registerinfo.phone",
-                                lastactivedate: "registerinfo.lastactivedate",
-                                expiredate: "registerinfo.expiredate",
-                                duration: "registergroupinfo.duration"
-
-                            }) // 2. Select all columns from both tables
-                            .join("registergroupinfo", "registerinfo.ugroupid", "registergroupinfo.ugroupid") // 3. Join with 'registergroupinfo'
-                            .where("registerinfo.status", "=", 'active') // 4. Filter results
-                            .andWhere("registerinfo.id", "=", id)
-                            .first()
-                            // .orderBy(".registerinfo.ugroupid", "desc"); // 5. Sort results
-
-                        if (!reportlistall) {
-                            return res.status(402).json({ message: "Data Not found" });
-                        }
-
-                        const report = reportlistall;
-                        
-                        // console.log(report);
-
-                        const resultreports = async() => {
-
-                            const seconds = report.duration;
-
-                            const hours = Math.floor(seconds / 3600);
-                            const minutes = Math.floor((seconds % 3600) / 60);
-
-                            // Format to two digits with leading zero if needed
-                            const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-
-                            return {
-                                id: report.id,
-                                routerid: report.routerid,
-                                ugroupid: report.ugroupid,
-                                create_at: date.format(new Date(report.create_at*1000), "YYYY-MM-DD HH:mm:ss"),
-                                visitortype: report.visitortype,
-                                groupname: report.groupname,
-                                name: report.name,
-                                surname: report.surname,
-                                user: report.user,
-                                password: report.password,
-                                idcardnumber: report.idcardnumber,
-                                passportnumber: report.passportnumber,
-                                phone: report.phone,
-                                lastactivedate: date.format(new Date(report.lastactivedate*1000), "YYYY-MM-DD HH:mm:ss"),
-                                expiredate: date.format(new Date(report.expiredate*1000), "YYYY-MM-DD"),
-                                duration: timeString
-                            }
-                        };
-
-                        return resolve({
-
-                            tital: await resultreports(),
-                            result: result
-                        });
                 })
+
+            } catch (error) {
+                console.log(error);
+            }
+                
+            try {
+                const reportlistall = await db("registerinfo") // 1. Start query on 'registerinfo' table
+                    .select({
+                        id: "registerinfo.id",
+                        routerid: "registerinfo.routerid",
+                        ugroupid: "registerinfo.ugroupid",
+                        create_at: "registerinfo.create_at",
+                        visitortype: "registerinfo.visitortype",
+                        groupname: "registergroupinfo.groupname",
+                        name: "registerinfo.name",
+                        surname: "registerinfo.surname",
+                        user: "registerinfo.user",
+                        password: "registerinfo.password",
+                        idcardnumber: "registerinfo.idcardnumber",
+                        passportnumber: "registerinfo.passportnumber",
+                        phone: "registerinfo.phone",
+                        lastactivedate: "registerinfo.lastactivedate",
+                        expiredate: "registerinfo.expiredate",
+                        duration: "registergroupinfo.duration"
+
+                    }) // 2. Select all columns from both tables
+                    .join("registergroupinfo", "registerinfo.ugroupid", "registergroupinfo.ugroupid") // 3. Join with 'registergroupinfo'
+                    .where("registerinfo.status", "=", 'active') // 4. Filter results
+                    .andWhere("registerinfo.id", "=", id)
+                    .first()
+
+                    // .orderBy(".registerinfo.ugroupid", "desc"); // 5. Sort results
+
+                    if (!reportlistall) {
+                        return res.status(402).json({ message: "Data Not found" });
+                    }
+
+                    const report = reportlistall;
+                    
+                    // console.log(report);
+
+                    const resultreports = async() => {
+
+                        const seconds = report.duration;
+
+                        const hours = Math.floor(seconds / 3600);
+                        const minutes = Math.floor((seconds % 3600) / 60);
+
+                        // Format to two digits with leading zero if needed
+                        const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
+                        return {
+                            id: report.id,
+                            routerid: report.routerid,
+                            ugroupid: report.ugroupid,
+                            create_at: date.format(new Date(report.create_at*1000), "YYYY-MM-DD HH:mm:ss"),
+                            visitortype: report.visitortype,
+                            groupname: report.groupname,
+                            name: report.name,
+                            surname: report.surname,
+                            user: report.user,
+                            password: report.password,
+                            idcardnumber: report.idcardnumber,
+                            passportnumber: report.passportnumber,
+                            phone: report.phone,
+                            lastactivedate: date.format(new Date(report.lastactivedate*1000), "YYYY-MM-DD HH:mm:ss"),
+                            expiredate: date.format(new Date(report.expiredate*1000), "YYYY-MM-DD"),
+                            duration: timeString
+                        }
+                    };
+
+                    return resolve({
+
+                        tital: await resultreports(),
+                        result: result
+                    });
+                
+
             } catch (error) {
                 console.log(error);
             }
