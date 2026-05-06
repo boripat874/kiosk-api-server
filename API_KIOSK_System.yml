@@ -1799,6 +1799,36 @@ paths:
             type: string
             # default: "-"
             # example: search
+        - name: period
+          in: query
+          description: ช่วงเวลา
+          required: false
+          schema:
+            type: string
+            enum:
+              - today
+              - thisweek
+              - thismonth
+              - thisyear
+              - bydate
+            default: today
+            # example: today
+        - name: date_start
+          in: query
+          description: วันที่เริ่มต้น (ใช้เมื่อ period=bydate)
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2026-01-01"
+        - name: date_end
+          in: query
+          description: วันที่สิ้นสุด (ใช้เมื่อ period=bydate)
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2026-12-01"
       responses:
         "200":
           description: Success response
