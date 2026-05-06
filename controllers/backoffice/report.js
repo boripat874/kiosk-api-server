@@ -322,7 +322,7 @@ exports.reportUserDetails = async (req, res) => {
 
                 const resultreports = async() => {
 
-                    const seconds = report.duration;
+                    const seconds = report.duration; // Assuming 'duration' is in seconds
 
                     const hours = Math.floor(seconds / 3600);
                     const minutes = Math.floor((seconds % 3600) / 60);
