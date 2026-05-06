@@ -316,7 +316,7 @@ exports.reportUserDetails = async (req, res) => {
                                 });
                             }
     
-                            result = resultArray;
+                            result = resultArray; // Assign the result array to the result variable
     
                             // console.log("resultArray ====>>>> ", resultArray);
                             
