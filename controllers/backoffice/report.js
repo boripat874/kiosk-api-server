@@ -266,7 +266,7 @@ exports.reportUserDetails = async (req, res) => {
             // const Username = req.query.user || "-";
             const id = req.query.id || "-";
 
-
+            console.log("ID >> ", id);
 
             var result = [];
             var resultreportsTital = {};
