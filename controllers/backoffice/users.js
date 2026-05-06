@@ -599,7 +599,7 @@ exports.userscreate = async (req, res) => {
                             "validDays": calculatedValidDays,
                             "fromDate": startDateTime,
                             "toDate": endDateTime,
-                            "location": "thailand"
+                            "location": "Bangkok"
                         },
                         "guestInfo":{
                                 "company":"Cisco",
@@ -615,7 +615,7 @@ exports.userscreate = async (req, res) => {
                     }
                 };
 
-                console.log(CiscoUserBody);
+                // console.log(CiscoUserBody);
 
                 // const CiscoUserBody = 
                 // `<guestAccessInfo>
@@ -872,7 +872,7 @@ exports.usersupdate = async (req, res) => {
                             "validDays": calculatedValidDays,
                             "fromDate": startDateTime,
                             "toDate": endDateTime,
-                            "location": "thailand"
+                            "location": "Bangkok"
                         },
                         "guestInfo":{
                                 "company":"Cisco",

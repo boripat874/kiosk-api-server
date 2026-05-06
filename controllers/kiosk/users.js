@@ -77,6 +77,8 @@ exports.userscreate = async (req, res) => {
             var routerid = "";
             var Username = await createUniqueIdUesr();
             var password = await createUniqueIdPassword();
+            // var password = password;
+
 
             if(!ugroupid){
                 return reject({status: 402, message: "ugroupid not required" });
@@ -222,7 +224,7 @@ exports.userscreate = async (req, res) => {
                             "validDays": calculatedValidDays,
                             "fromDate": startDateTime,
                             "toDate": endDateTime,
-                            "location": "thailand"
+                            "location": "Bangkok"
                         },
                         "guestInfo":{
                                 "company":"Cisco",
@@ -240,6 +242,8 @@ exports.userscreate = async (req, res) => {
 
                 console.log(CiscoUserBody);
 
+                // console.log("cisco create user >>> ",`https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser`);
+
                 // ส่งคำขอสร้าง User
                 await axios.post(`https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser`,
                     CiscoUserBody,
@@ -247,11 +251,21 @@ exports.userscreate = async (req, res) => {
                 )
                 .then((response) => {
 
-                    console.log(response.data);
+                    // console.log("response cisco create user >>>",response);
+
+                    // if(response.data != null){
+                    //     console.log("response cisco create user >>>",response.data.ERSResponse.messages[0].title);
+                    // }
 
                 }).catch((error) => {
 
-                    console.log(error.response.data.ERSResponse.messages[0].title);
+                    if (error.response.data != null) {
+                        
+                        console.log("error cisco create user >>>",error.response.data.ERSResponse.messages[0].title);
+
+                    }
+
+                    // console.log("error cisco create user >>>",error.response);
 
                     let ciscoErrorTitle = '';
                     let httpStatus = 402; // ค่า default ที่คุณต้องการ
@@ -265,7 +279,14 @@ exports.userscreate = async (req, res) => {
                         // 2. พยายามแยก 'title' จากโครงสร้าง response ของ Cisco ERS (JSON)
                         // โครงสร้าง error JSON มักจะเป็น: { ERSResponse: { messages: [ { title: '...' } ] } }
                         try {
-                            ciscoErrorTitle = responseData.ERSResponse.messages[0].title;
+                            
+                            if(responseData != null){
+                                
+                                ciscoErrorTitle = responseData.ERSResponse.messages[0].title;
+                            }else{
+                                ciscoErrorTitle = `[No error message in CISCO response]`;
+                            }
+                            // ciscoErrorTitle = "Error catch 1"
                         } catch (parseError) {
                             // หากโครงสร้าง JSON ไม่เป็นไปตามที่คาดหวัง 
                             ciscoErrorTitle = `[Failed to parse CISCO message title]`;
@@ -289,7 +310,7 @@ exports.userscreate = async (req, res) => {
 
                     const searchResult = Usesresponse.data;
 
-                    console.log(Usesresponse.data);
+                    console.log("response cisco get user >>>",Usesresponse.data);
 
                     // 1. Check if SearchResult and resources exist and are not empty
                     if (!searchResult || !searchResult.GuestUser) {
@@ -368,7 +389,9 @@ exports.userscreate = async (req, res) => {
 
             resolve({
                 status: 200,
-                message: "User Add successful"
+                message: "User Add successful",
+                user: Username,
+                password: password
             })
 
         }
@@ -524,7 +547,7 @@ exports.kioskspecifications = async (req, res) => {
             .andWhere("number_serial", 1)
             .first();
 
-            console.log(specificationsData);
+            // console.log(specificationsData);
             // .where("status", "active");
 
             const resultSpecificationsData = {

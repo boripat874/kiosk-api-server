@@ -33,7 +33,7 @@ router.post("/usersimport",users.usersImport);
 // report
 router.get("/reporttraffic_volume", report.traffic_volume);
 router.get("/reportlistall", report.reportlistAll);
-router.put("/reportuserdetails", report.reportUserDetails);
+router.get("/reportloglistall", report.reportUserDetails);
 
 // eventlog
 router.get("/eventloglistall", eventlog.eventloglistAll);

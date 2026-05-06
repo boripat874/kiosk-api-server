@@ -152,9 +152,6 @@ paths:
                 surname:
                   type: string
                   description: นามสกุลผู้ใช้งาน
-                password:
-                  type: string
-                  description: รหัสผ่าน
                 idcardnumber:
                   type: string
                   description: เลขบัตรประชาชน
@@ -171,7 +168,6 @@ paths:
                 visitortype: "ผู้มาติดต่อราชการ"
                 name: "N12"
                 surname: "SN12"
-                password: "P12"
                 idcardnumber: "NNC12"
                 passportnumber: "PPC12"
                 phone: "0987894562"
@@ -189,7 +185,10 @@ paths:
                     type: string
                     description: ข้อความอธิบายสถานะ
               example:
+                status: 200
                 message: "User Add successful"
+                user: "zoo263230009"
+                password: "zoo@843857"
         "400":
           description: Invalid request
           content:
@@ -1751,6 +1750,77 @@ paths:
               example:
                 message: "Unauthorized"
 
+  /api/reportloglistall:
+    get:
+      summary: Report log list
+      description: Retrieve a list of report logs.
+      tags:
+        - Report
+      security:
+        - api_key: []
+        - Authorization: []
+      parameters:
+        - name: user
+          in: query
+          required: false
+          description: ชื่อบัญชีผู้ใช้งาน
+          schema:
+            type: string
+            # default: "-"
+            # example: search
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    description: จํานวนรายการ
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        framed_ip_address:
+                          type: string
+                          description: IP ที่ได้รับจาก Router
+                        auth_acs_timestamp:
+                          type: string
+                          description: เวลาที่ใช้งาน
+
+              example:
+                result:
+                  - framed_ip_address: "127.0.0.1"
+                    auth_acs_timestamp: "2023-01-01 10:00:00"
+
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
 
   # event log
   /api/eventloglistall:
@@ -1838,7 +1908,7 @@ paths:
                     description: Error message
               example:
                 message: "Unauthorized"
-
+  
 
   # Administrator
   /api/administratorlistall:

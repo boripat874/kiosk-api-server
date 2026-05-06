@@ -2,6 +2,7 @@ module.exports = {
   apps : [{
     name: "Kiosk-Server",
     script: 'server.js',
+    instances  : 'max',
     watch: true,
     env: {
       NameDatabase: "pg",

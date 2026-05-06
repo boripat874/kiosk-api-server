@@ -29,7 +29,7 @@ cron.schedule('0 1 * * *', async () => {
     try {
       const now = new Date();
       const { rowCount } = await db('revoked_tokens') // Knex v0.21+ returns { rowCount } for DELETE on PostgreSQL
-        .where('expires_at', '<', now)
+        .where('expires_at', '<', Number(now) / 1000) // Assuming expires_at is stored as a UNIX timestamp in seconds
         .del();
       // สำหรับ Knex เวอร์ชันเก่า อาจจะคืนค่าจำนวนแถวโดยตรง
       // const deletedCount = await db('revoked_tokens').where('expires_at', '<', now).del();
