@@ -362,7 +362,7 @@ exports.reportUserDetails = async (req, res) => {
 
             const Username = resultreportsTital.user || "-";
 
-            console.log("Username ====>>>> ", Username);
+            // console.log("Username ====>>>> ", Username);
 
             try {
                 await axios.get(`https://${process.env.CISCO_IP}/admin/API/mnt/Session/UserName/${Username}`, AuthCiscoMnt)

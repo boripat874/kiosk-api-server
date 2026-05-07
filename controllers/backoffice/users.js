@@ -171,7 +171,7 @@ exports.updatepassword = async(req, res) => {
       .andWhere({ "status": true })
       .first()
       .then(async(forgotemail) => {
-        console.log(forgotemail);
+        // console.log(forgotemail);
         if (!forgotemail) {
           reject({ status: 402, message: "forgot email not required" });
         }
@@ -643,7 +643,7 @@ exports.userscreate = async (req, res) => {
                 )
                 .then((response) => {
 
-                    console.log(response.data);
+                    // console.log(response.data);
                     
                 }).catch((error) => {
 
@@ -685,7 +685,7 @@ exports.userscreate = async (req, res) => {
                     
                     const searchResult = Usesresponse.data;
 
-                    console.log(Usesresponse.data);
+                    // console.log(Usesresponse.data);
 
                     // 1. Check if SearchResult and resources exist and are not empty
                     if (!searchResult || !searchResult.GuestUser) {
@@ -888,11 +888,11 @@ exports.usersupdate = async (req, res) => {
                     }
                 };
 
-                console.log(CiscoUserBody);
+                // console.log(CiscoUserBody);
 
                 await axios.put(`https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser/${rows[0].routerid}`, CiscoUserBody,AuthCisco)
                 .then((response) => {
-                    console.log(response.data);
+                    // console.log(response.data);
                 })
                 .catch((error) => {
                     return reject({status: 402, message: `CISCO error : ${error.message}` });
@@ -1012,7 +1012,7 @@ exports.usersdelete = async (req, res) => {
 
                 await axios.delete(`https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser/${rows.routerid}`,AuthCisco)
                 .then((response) => {
-                    console.log(response.data);
+                    // console.log(response.data);
                 })
                 .catch((error) => {
                     return reject({status: 402, message: `CISCO error : ${error.message}` });
