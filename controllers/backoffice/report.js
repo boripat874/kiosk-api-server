@@ -268,7 +268,7 @@ exports.reportUserDetails = async (req, res) => {
             // const Username = req.query.user || "-";
             const id = req.query.id || "-";
 
-            console.log("ID >> ", id);
+            // console.log("ID >> ", id);
 
             var result = [];
             var resultreportsTital = {};
@@ -354,11 +354,15 @@ exports.reportUserDetails = async (req, res) => {
 
                 resultreportsTital = await resultreports();
 
+                
+
             } catch (error) {
                 console.log(error);
             }
 
             const Username = resultreportsTital.user || "-";
+
+            console.log("Username ====>>>> ", Username);
 
             try {
                 await axios.get(`https://${process.env.CISCO_IP}/admin/API/mnt/Session/UserName/${Username}`, AuthCisco)
