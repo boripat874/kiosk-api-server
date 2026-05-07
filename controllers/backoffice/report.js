@@ -365,7 +365,7 @@ exports.reportUserDetails = async (req, res) => {
             console.log("Username ====>>>> ", Username);
 
             try {
-                await axios.get(`https://${process.env.CISCO_IP}/admin/API/mnt/Session/UserName/${Username}`, AuthCisco)
+                await axios.get(`https://${process.env.CISCO_IP}/admin/API/mnt/Session/UserName/${Username}`, AuthCiscoMnt)
                 // await axios.get(`https://${process.env.CISCO_IP}:443/ers/config/guestuser?size=1000&page=1`, AuthCisco)
                 //  http://IP-server:port /ers/config/guestuser?size={{size}} &{{page}} 
 

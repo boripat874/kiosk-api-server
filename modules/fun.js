@@ -285,7 +285,7 @@ exports.createUniqueIdUesr = async function () {
     .then(async (row) => {
       if (row) {
 
-        newId = "zoo" + (timedate.getFullYear() % 100) + timedate.getMonth() + timedate.getDate() + (Number(row.number) + 1).toString().padStart(4, "0");
+        newId = "zoo" + (timedate.getFullYear() % 100) + (timedate.getMonth()+1) + timedate.getDate() + (Number(row.number) + 1).toString().padStart(4, "0");
         
         await db("runnumber")
           .where({id:"kiosknumber"})
@@ -325,10 +325,10 @@ exports.createUniqueIdPassword = async function () {
 
 exports.getUTCFormattedDate = function getUTCFormattedDate(dateObj) {
 
-    // toISOString() จะให้ผลลัพธ์ในรูปแบบ 'YYYY-MM-DDTHH:mm:ss.sssZ'
-    // ซึ่ง Cisco ISE อาจไม่ชอบ หาก ISE ต้องการแค่ MM/DD/YYYY HH:mm
-    // เราอาจจะต้องปรับให้ตรงตามที่ Cisco ISE ต้องการมากที่สุด (ดูหมายเหตุด้านล่าง)
-    
-    // สำหรับการทดลอง ให้ใช้ toISOString() ไปก่อน
-    return dateObj.toISOString(); 
+  // toISOString() จะให้ผลลัพธ์ในรูปแบบ 'YYYY-MM-DDTHH:mm:ss.sssZ'
+  // ซึ่ง Cisco ISE อาจไม่ชอบ หาก ISE ต้องการแค่ MM/DD/YYYY HH:mm
+  // เราอาจจะต้องปรับให้ตรงตามที่ Cisco ISE ต้องการมากที่สุด (ดูหมายเหตุด้านล่าง)
+  
+  // สำหรับการทดลอง ให้ใช้ toISOString() ไปก่อน
+  return dateObj.toISOString(); 
 };

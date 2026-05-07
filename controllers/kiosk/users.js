@@ -73,6 +73,26 @@ exports.userscreate = async (req, res) => {
                 expiredate
             } = req.body;
 
+            const Oldaccount = await db("registerinfo")
+            .select("*")
+            .where("status", "active")
+            .andWhere(function() {
+                this.where("expiredate", ">", Math.floor(Date.now() / 1000));
+            })
+            .first();
+
+            if(Oldaccount){
+
+                return resolve({
+
+                    status: 200,
+                    message: "User already exists",
+                    user: Oldaccount.user,
+                    password: Oldaccount.password
+                })
+
+            }
+
             var ugroupid = "kiosk2025";
             var routerid = "";
             var Username = await createUniqueIdUesr();
@@ -240,7 +260,7 @@ exports.userscreate = async (req, res) => {
                     }
                 };
 
-                console.log(CiscoUserBody);
+                // console.log(CiscoUserBody);
 
                 // console.log("cisco create user >>> ",`https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser`);
 
@@ -310,7 +330,7 @@ exports.userscreate = async (req, res) => {
 
                     const searchResult = Usesresponse.data;
 
-                    console.log("response cisco get user >>>",Usesresponse.data);
+                    // console.log("response cisco get user >>>",Usesresponse.data);
 
                     // 1. Check if SearchResult and resources exist and are not empty
                     if (!searchResult || !searchResult.GuestUser) {
@@ -387,7 +407,7 @@ exports.userscreate = async (req, res) => {
 
             
 
-            resolve({
+            return resolve({
                 status: 200,
                 message: "User Add successful",
                 user: Username,
