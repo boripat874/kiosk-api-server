@@ -73,6 +73,8 @@ exports.userscreate = async (req, res) => {
                 expiredate
             } = req.body;
 
+            // Check user
+
             const Oldaccount = await db("registerinfo")
             .select("*")
             .where("status", "active")
