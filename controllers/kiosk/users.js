@@ -81,6 +81,8 @@ exports.userscreate = async (req, res) => {
             .andWhere(function() {
                 this.where("expiredate", ">", Math.floor(Date.now() / 1000));
             })
+            .where("idcardnumber", idcardnumber)
+            .orWhere("passportnumber", passportnumber)
             .first();
 
             if(Oldaccount){
