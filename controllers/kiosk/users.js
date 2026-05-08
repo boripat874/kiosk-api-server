@@ -81,25 +81,25 @@ exports.userscreate = async (req, res) => {
             .andWhere(function() {
                 this.where("expiredate", ">", Math.floor(Date.now() / 1000));
             })
-            .where("idcardnumber", idcardnumber)
-            .orWhere("passportnumber", passportnumber)
-            // .andWhere(function() {
-            // // ใช้ Grouping (วงเล็บ) เพื่อครอบเงื่อนไข ID Card หรือ Passport
-            // // และเช็คว่าตัวแปรต้องไม่เป็น null หรือ undefined
-            // if (idcardnumber) {
+            // .where("idcardnumber", idcardnumber)
+            // .orWhere("passportnumber", passportnumber)
+            .andWhere(function() {
+            // ใช้ Grouping (วงเล็บ) เพื่อครอบเงื่อนไข ID Card หรือ Passport
+            // และเช็คว่าตัวแปรต้องไม่เป็น null หรือ undefined
+            if (idcardnumber || idcardnumber != "") {
 
-            //     this.where("idcardnumber", idcardnumber);
+                this.where("idcardnumber", idcardnumber);
 
-            // }else if (passportnumber) {
+            }else if (passportnumber || passportnumber != "") {
 
-            //     // ถ้ามี idcardnumber มาก่อนหน้า ให้ใช้ orWhere 
-            //     // แต่ถ้าไม่มี (กรณี idcardnumber เป็น null) ให้ใช้ where ปกติ
-            //     this.where("passportnumber", passportnumber);
+                // ถ้ามี idcardnumber มาก่อนหน้า ให้ใช้ orWhere 
+                // แต่ถ้าไม่มี (กรณี idcardnumber เป็น null) ให้ใช้ where ปกติ
+                this.where("passportnumber", passportnumber);
                 
-            // }
-            // // กรณีที่ทั้งคู่เป็น null จะทำให้ query ส่วนนี้ว่างเปล่า 
-            // // ซึ่งปลอดภัยกว่าการไป match กับค่า null ใน database
-            // })
+            }
+            // กรณีที่ทั้งคู่เป็น null จะทำให้ query ส่วนนี้ว่างเปล่า 
+            // ซึ่งปลอดภัยกว่าการไป match กับค่า null ใน database
+            })
             .first();
 
             if(Oldaccount){
