@@ -75,27 +75,45 @@ exports.userscreate = async (req, res) => {
 
             // Check user
 
-            // const Oldaccount = await db("registerinfo")
-            // .select("*")
-            // .where("status", "active")
+            const Oldaccount = await db("registerinfo")
+            .select("*")
+            .where("status", "active")
+            .andWhere(function() {
+                this.where("expiredate", ">", Math.floor(Date.now() / 1000));
+            })
+            .where("idcardnumber", idcardnumber)
+
+            .orWhere("passportnumber", passportnumber)
             // .andWhere(function() {
-            //     this.where("expiredate", ">", Math.floor(Date.now() / 1000));
-            // })
-            // .where("idcardnumber", idcardnumber)
-            // .orWhere("passportnumber", passportnumber)
-            // .first();
+            // // ใช้ Grouping (วงเล็บ) เพื่อครอบเงื่อนไข ID Card หรือ Passport
+            // // และเช็คว่าตัวแปรต้องไม่เป็น null หรือ undefined
+            // if (idcardnumber) {
 
-            // if(Oldaccount){
+            //     this.where("idcardnumber", idcardnumber);
 
-            //     return resolve({
+            // }else if (passportnumber) {
 
-            //         status: 200,
-            //         message: "User already exists",
-            //         user: Oldaccount.user,
-            //         password: Oldaccount.password
-            //     })
-
+            //     // ถ้ามี idcardnumber มาก่อนหน้า ให้ใช้ orWhere 
+            //     // แต่ถ้าไม่มี (กรณี idcardnumber เป็น null) ให้ใช้ where ปกติ
+            //     this.where("passportnumber", passportnumber);
+                
             // }
+            // // กรณีที่ทั้งคู่เป็น null จะทำให้ query ส่วนนี้ว่างเปล่า 
+            // // ซึ่งปลอดภัยกว่าการไป match กับค่า null ใน database
+            // })
+            .first();
+
+            if(Oldaccount){
+
+                return resolve({
+
+                    status: 200,
+                    message: "User already exists",
+                    user: Oldaccount.user,
+                    password: Oldaccount.password
+                })
+
+            }
 
             var ugroupid = "kiosk2025";
             var routerid = "";

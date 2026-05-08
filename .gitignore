@@ -1,0 +1,20 @@
+# Dependency directory
+# ห้ามอัพโหลดโฟลเดอร์ไลบรารี เพราะมันใหญ่มากและโหลดใหม่ได้ผ่าน npm install
+node_modules/
+
+# Environment variables
+# ห้ามอัพโหลดเด็ดขาด! เพราะมักจะมีรหัสผ่าน, API Key, หรือความลับของระบบ
+# .env
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
+
+# Debug logs
+# ไฟล์บันทึกข้อผิดพลาดต่างๆ ไม่จำเป็นต้องอยู่บน Git
+# npm-debug.log*
+
+# OS Metadata
+# ไฟล์ขยะจากระบบปฏิบัติการ
+.DS_Store
+Thumbs.db
