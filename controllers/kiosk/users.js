@@ -75,27 +75,27 @@ exports.userscreate = async (req, res) => {
 
             // Check user
 
-            const Oldaccount = await db("registerinfo")
-            .select("*")
-            .where("status", "active")
-            .andWhere(function() {
-                this.where("expiredate", ">", Math.floor(Date.now() / 1000));
-            })
-            .where("idcardnumber", idcardnumber)
-            .orWhere("passportnumber", passportnumber)
-            .first();
+            // const Oldaccount = await db("registerinfo")
+            // .select("*")
+            // .where("status", "active")
+            // .andWhere(function() {
+            //     this.where("expiredate", ">", Math.floor(Date.now() / 1000));
+            // })
+            // .where("idcardnumber", idcardnumber)
+            // .orWhere("passportnumber", passportnumber)
+            // .first();
 
-            if(Oldaccount){
+            // if(Oldaccount){
 
-                return resolve({
+            //     return resolve({
 
-                    status: 200,
-                    message: "User already exists",
-                    user: Oldaccount.user,
-                    password: Oldaccount.password
-                })
+            //         status: 200,
+            //         message: "User already exists",
+            //         user: Oldaccount.user,
+            //         password: Oldaccount.password
+            //     })
 
-            }
+            // }
 
             var ugroupid = "kiosk2025";
             var routerid = "";
