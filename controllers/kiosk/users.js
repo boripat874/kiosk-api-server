@@ -78,9 +78,9 @@ exports.userscreate = async (req, res) => {
             var routerid = "";
 
 
-            if(!ugroupid){
-                return reject({status: 402, message: "ugroupid not required" });
-            }
+            // if(!ugroupid){
+            //     return reject({status: 402, message: "ugroupid not required" });
+            // }
 
             if(!name){
                 return reject({status: 402, message: "name not required" });
@@ -90,9 +90,9 @@ exports.userscreate = async (req, res) => {
                 return reject({status: 402, message: "surname not required"})
             }
 
-            if(!password){
-                return reject({status: 402, message: "password not required"})
-            }
+            // if(!password){
+            //     return reject({status: 402, message: "password not required"})
+            // }
 
             if(!idcardnumber && !passportnumber){
                 return reject({status: 402, message: "nationalidcard or passportcard not required"})
