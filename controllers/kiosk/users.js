@@ -75,6 +75,36 @@ exports.userscreate = async (req, res) => {
 
             // Check user
 
+            
+            // var password = password;
+
+
+            if(!ugroupid){
+                return reject({status: 402, message: "ugroupid not required" });
+            }
+
+            if(!name){
+                return reject({status: 402, message: "name not required" });
+            }
+
+            if(!surname){
+                return reject({status: 402, message: "surname not required"})
+            }
+
+            if(!password){
+                return reject({status: 402, message: "password not required"})
+            }
+
+            if(!idcardnumber && !passportnumber){
+                return reject({status: 402, message: "nationalidcard or passportcard not required"})
+            }
+
+            if (expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
+                return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
+            }
+
+            let phoneNumber = "+66" + phone.slice(1, 10);
+
             const Oldaccount = await db("registerinfo")
             .select("*")
             .where("status", "active")
@@ -118,34 +148,6 @@ exports.userscreate = async (req, res) => {
             var routerid = "";
             var Username = await createUniqueIdUesr();
             var password = await createUniqueIdPassword();
-            // var password = password;
-
-
-            if(!ugroupid){
-                return reject({status: 402, message: "ugroupid not required" });
-            }
-
-            if(!name){
-                return reject({status: 402, message: "name not required" });
-            }
-
-            if(!surname){
-                return reject({status: 402, message: "surname not required"})
-            }
-
-            if(!password){
-                return reject({status: 402, message: "password not required"})
-            }
-
-            if(!idcardnumber && !passportnumber){
-                return reject({status: 402, message: "nationalidcard or passportcard not required"})
-            }
-
-            if (expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
-                return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
-            }
-
-            let phoneNumber = "+66" + phone.slice(1, 10);
             
             //### Cisco สร้าง User
 
