@@ -180,6 +180,7 @@ exports.reportlistAll = async (req, res) => {
                 // .limit(limit)
                 .offset(offset)
                 .orderBy("registerinfo.lastactivedate", "desc")
+                .orderBy("registerinfo.create_at", "desc")
                 // .orderBy(".registerinfo.ugroupid", "desc"); // 5. Sort results
 
             // console.log("reportlistall.length >.",reportlistall.length);
