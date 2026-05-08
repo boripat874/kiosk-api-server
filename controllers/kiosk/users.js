@@ -82,7 +82,6 @@ exports.userscreate = async (req, res) => {
                 this.where("expiredate", ">", Math.floor(Date.now() / 1000));
             })
             .where("idcardnumber", idcardnumber)
-
             .orWhere("passportnumber", passportnumber)
             // .andWhere(function() {
             // // ใช้ Grouping (วงเล็บ) เพื่อครอบเงื่อนไข ID Card หรือ Passport
