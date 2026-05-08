@@ -74,9 +74,8 @@ exports.userscreate = async (req, res) => {
             } = req.body;
 
             // Check user
-
-            
-            // var password = password;
+            var ugroupid = "kiosk2025";
+            var routerid = "";
 
 
             if(!ugroupid){
@@ -144,8 +143,6 @@ exports.userscreate = async (req, res) => {
 
             }
 
-            var ugroupid = "kiosk2025";
-            var routerid = "";
             var Username = await createUniqueIdUesr();
             var password = await createUniqueIdPassword();
             
