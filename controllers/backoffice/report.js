@@ -372,6 +372,9 @@ exports.reportUserDetails = async (req, res) => {
 
                 .then( async(response) => {
 
+                    console.log("CISCOLOG_USER >> ", process.env.CISCOLOG_USER);
+                    console.log("CISCOLOG_PASSWORD >> ", process.env.CISCOLOG_PASSWORD);
+
                     if(response.status === 404){
                         resolve({
                             status:200,
