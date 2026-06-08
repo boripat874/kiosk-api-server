@@ -315,9 +315,9 @@ exports.reportUserDetails = async (req, res) => {
 
                 // .orderBy(".registerinfo.ugroupid", "desc"); // 5. Sort results
 
-                if (!reportlistall) {
-                    return res.status(402).json({ message: "Data Not found" });
-                }
+                // if (!reportlistall) {
+                //     return res.status(402).json({ message: "Data Not found" });
+                // }
 
                 const report = reportlistall;
                     
