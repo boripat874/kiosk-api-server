@@ -420,7 +420,7 @@ exports.reportUserDetails = async (req, res) => {
                 })
 
             } catch (error) {
-                console.log(error);
+                console.log("Error Cisco >> ",error);
             }
                 
 
