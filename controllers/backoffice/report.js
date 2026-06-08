@@ -32,10 +32,10 @@ const ciscoAgent = new https.Agent({
 });
 
 const AuthCisco = {
-    headers: {
-        "Content-Type": "application/json;charset=utf-8",
-        "Accept": "application/json;charset=utf-8",
-    },
+    // headers: {
+    //     "Content-Type": "application/json;charset=utf-8",
+    //     "Accept": "application/json;charset=utf-8",
+    // },
     auth: {
         username: process.env.CISCOLOG_USER,
         password: process.env.CISCOLOG_PASSWORD
