@@ -23,6 +23,9 @@ const options = {
 
 const swaggerDocument = YAML.load('./API_KIOSK_System.yml');
 
+// อนุญาตให้เข้าถึงไฟล์สแตติก เช่น รูปภาพ โลคอล CSS ที่อยู่ในโฟลเดอร์ public
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(cors());
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json()); 
@@ -35,6 +38,16 @@ const xml2js = require('xml2js');
 const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
 const axios = require('axios');
+
+app.get('/webauth/login.html', (req, res) => {
+    // แสดง Log บน Console เมื่อมีผู้ใช้งานถูก Redirect มาที่หน้านี้
+    console.log(`[${new Date().toISOString()}] Client connected from IP: ${req.ip}`);
+    console.log(`Query Parameters received:`, req.query);
+
+    // ส่งไฟล์หน้าเว็บล็อกอินกลับไปให้เบราว์เซอร์ของผู้ใช้
+    // พารามิเตอร์เช่น ?switch_url=... จะติดไปที่เบราว์เซอร์ปลายทางโดยอัตโนมัติ ตัว JS ในหน้าเว็บจะไปอ่านค่าต่อเอง
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.get("/apitest", async (req, res) => {
 
