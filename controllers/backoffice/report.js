@@ -355,8 +355,6 @@ exports.reportUserDetails = async (req, res) => {
 
                 resultreportsTital = await resultreports();
 
-                
-
             } catch (error) {
                 console.log(error);
             }
@@ -365,17 +363,45 @@ exports.reportUserDetails = async (req, res) => {
 
             // console.log("Username ====>>>> ", Username);
 
+            // 1. สร้างโครงสร้างฟังก์ชันแปลง XML ครอบไว้ให้เป็น Promise เพื่อให้สามารถใช้ await ร่วมกับลำดับโค้ดได้
+            const parseXmlPromise = (xmlString) => {
+                return new Promise((resolveParse, rejectParse) => {
+                    parser.parseString(xmlString, (err, parsedResult) => {
+                        if (err) {
+                            console.error('Error parsing XML:', err);
+                            return rejectParse(err);
+                        }
+                        
+                        const sessionParams = parsedResult?.sessionParameters;
+                        
+                        // ดึงค่าออกมาตรงๆ (เพราะมี explicitArray: false แล้ว)
+                        // หาก API มีสิทธิ์คืนค่ามาเป็นตัวเดี่ยว หรือ เป็น Array ให้สกัดให้ปลอดภัยแบบนี้ครับ
+                        const framedIp = sessionParams?.framed_ip_address;
+                        const authTimestamp = sessionParams?.auth_acs_timestamp;
+
+                        // ถ้าต้องการส่งออกเป็นรูปแบบ Array ตามเป้าหมายเดิมของคุณ
+                        const formattedResult = [{
+                            "framed_ip_address": framedIp || "-",
+                            "auth_acs_timestamp": authTimestamp || "-"
+                        }];
+
+                        resolveParse(formattedResult);
+                    });
+                });
+            };
+
             try {
-                await axios.get(`https://${process.env.CISCO_IP}/admin/API/mnt/Session/UserName/${Username}`, AuthCisco)
+                // 2. ใส่ await หน้า axios.get สำคัญมาก! เพื่อให้โค้ดหยุดรอ Response จริงๆ
+                const response = await axios.get(`https://${process.env.CISCO_IP}/admin/API/mnt/Session/UserName/${Username}`, AuthCisco)
                 // await axios.get(`https://${process.env.CISCO_IP}:443/ers/config/guestuser?size=1000&page=1`, AuthCisco)
                 //  http://IP-server:port /ers/config/guestuser?size={{size}} &{{page}} 
 
                 .then( async(response) => {
 
-                    console.log("CISCOLOG_USER >> ", process.env.CISCOLOG_USER);
-                    console.log("CISCOLOG_PASSWORD >> ", process.env.CISCOLOG_PASSWORD);
+                    // console.log("CISCOLOG_USER >> ", process.env.CISCOLOG_USER);
+                    // console.log("CISCOLOG_PASSWORD >> ", process.env.CISCOLOG_PASSWORD);
 
-                    console.log("response >> ", response.data);
+                    // console.log("response >> ", response.data);
 
                     if(response.status === 404){
                         resolve({
@@ -384,37 +410,11 @@ exports.reportUserDetails = async (req, res) => {
                         });
                     }
 
-                    if(response.data != ""){
+                    if(response.data && response.data !== ""){
 
-                        parser.parseString(response.data, (err, result) => {
-                            if (err) {
-                                console.error('Error parsing XML:', err);
-                                return;
-                            }
-    
-                            // Access the id
-                            const regex = /<framed_ip_address>(.*?)<\/framed_ip_address>[\s\S]*?<auth_acs_timestamp>(.*?)<\/auth_acs_timestamp>/g;
-                            const resultArray = [];
-                            let match;
-    
-                            while ((match = regex.exec(response.data)) !== null) {
-                                resultArray.push({
-                                    "framed_ip_address": match[1],
-                                    "auth_acs_timestamp": match[2]
-                                });
-                            }
-    
-                            result = resultArray; // Assign the result array to the result variable
-    
-                            // console.log("resultArray ====>>>> ", resultArray);
-                            
-                            // res.send({
-    
-                            //     "result": resultArray,
-    
-                            // })
-    
-                        });
+                        // 3. ใส่ await เพื่อรอให้แปลง XML และดึงค่าลงตัวแปรสำเร็จก่อนไหลต่อไปยังคำสั่งถัดไป
+                        result = await parseXmlPromise(response.data);
+                        console.log("result จากการแปลงเสร็จจริง >> ", result);
 
                     }else{
                         result = [];
@@ -422,7 +422,15 @@ exports.reportUserDetails = async (req, res) => {
                 })
 
             } catch (error) {
-                console.log("Error Cisco >> ",error);
+                // เช็คกรณี axios ยิงแล้วฝั่งนู้นพ่น 404 หรือ error กลับมา
+                if (error.response && error.response.status === 404) {
+                    return resolve({
+                        status: 200,
+                        message: "Data Not found or Invalid Username"
+                    });
+                }
+                console.log("Error Cisco >> ", error);
+                result = []; // ป้องกันค่าพัง
             }
                 
 
