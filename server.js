@@ -39,7 +39,7 @@ const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
 const axios = require('axios');
 
-app.get('/webauth/login.html', (req, res) => {
+app.get('/webauth/login', (req, res) => {
     // แสดง Log บน Console เมื่อมีผู้ใช้งานถูก Redirect มาที่หน้านี้
     console.log(`[${new Date().toISOString()}] Client connected from IP: ${req.ip}`);
     console.log(`Query Parameters received:`, req.query);
