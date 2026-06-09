@@ -46,7 +46,7 @@ app.get('/webauth/login', (req, res) => {
 
     // ส่งไฟล์หน้าเว็บล็อกอินกลับไปให้เบราว์เซอร์ของผู้ใช้
     // พารามิเตอร์เช่น ?switch_url=... จะติดไปที่เบราว์เซอร์ปลายทางโดยอัตโนมัติ ตัว JS ในหน้าเว็บจะไปอ่านค่าต่อเอง
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'loginWifi.html'));
 });
 
 app.get("/apitest", async (req, res) => {
