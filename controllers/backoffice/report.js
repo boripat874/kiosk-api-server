@@ -68,15 +68,19 @@ exports.traffic_volume = async (req, res) => {
 
             const countnationalidcard = await db("registerinfo")
                 .where("idcardnumber", "!=", "null")
-                .where("lastactivedate", ">=", selectedDate.startTimestamp) // Records created from the beginning of today
-                .where("lastactivedate", "<", selectedDate.endTimestamp)    // Records created before the beginning of tomorrow
+                // .where("lastactivedate", ">=", selectedDate.startTimestamp) // Records created from the beginning of today
+                // .where("lastactivedate", "<", selectedDate.endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count") 
 
             const countpassportcard = await db("registerinfo")
                 .where("passportnumber", "!=", "null")
-                .where("lastactivedate", ">=", selectedDate.startTimestamp) // Records created from the beginning of today
-                .where("lastactivedate", "<", selectedDate.endTimestamp)    // Records created before the beginning of tomorrow
+                // .where("lastactivedate", ">=", selectedDate.startTimestamp) // Records created from the beginning of today
+                // .where("lastactivedate", "<", selectedDate.endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count") 
 

@@ -221,15 +221,19 @@ exports.dashboardnumberusers = async (req, res) => {
 
             const countnationalidcard = await db("registerinfo")
                 .where("idcardnumber", "!=", "null")
-                .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
-                .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                // .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
+                // .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count") 
 
             const countpassportcard = await db("registerinfo")
                 .where("passportnumber", "!=", "null")
-                .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
-                .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                // .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
+                // .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count")
             
@@ -342,15 +346,19 @@ exports.dashboardusertype = async (req, res) => {
 
             const countnationalidcard = await db("registerinfo")
                 .where("idcardnumber", "!=", "null")
-                .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
-                .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                // .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
+                // .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count") 
 
             const countpassportcard = await db("registerinfo")
                 .where("passportnumber", "!=", "null")
-                .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
-                .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                // .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
+                // .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count")
             
@@ -461,27 +469,29 @@ exports.dashboardusers = async (req, res) => {
             }
 
             const users = await db("registerinfo")
-              .select(
-                "registerinfo.id as id",
-                "registerinfo.routerid as routerid",
-                "registerinfo.ugroupid as ugroupid",
-                "registerinfo.visitortype as visitortype",
-                "registergroupinfo.groupname as groupname",
-                "registerinfo.name as name",
-                "registerinfo.surname as surname",
-                "registerinfo.password as password",
-                "registerinfo.idcardnumber as idcardnumber",
-                "registerinfo.passportnumber as passportnumber",
-                "registerinfo.phone as phone",
-                "registerinfo.lastactivedate as lastactivedate", 
-                "registerinfo.expiredate as expiredate",
-                'registerinfo.status as status'
-               )
-              .leftJoin("registergroupinfo", "registerinfo.ugroupid", "=", "registergroupinfo.ugroupid")
-              .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
-              .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
-              .where("registerinfo.status", "=", "active")
-              .orderBy("lastactivedate", "desc");
+                .select(
+                    "registerinfo.id as id",
+                    "registerinfo.routerid as routerid",
+                    "registerinfo.ugroupid as ugroupid",
+                    "registerinfo.visitortype as visitortype",
+                    "registergroupinfo.groupname as groupname",
+                    "registerinfo.name as name",
+                    "registerinfo.surname as surname",
+                    "registerinfo.password as password",
+                    "registerinfo.idcardnumber as idcardnumber",
+                    "registerinfo.passportnumber as passportnumber",
+                    "registerinfo.phone as phone",
+                    "registerinfo.lastactivedate as lastactivedate", 
+                    "registerinfo.expiredate as expiredate",
+                    'registerinfo.status as status'
+                )
+                .leftJoin("registergroupinfo", "registerinfo.ugroupid", "=", "registergroupinfo.ugroupid")
+                //   .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
+                //   .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("registerinfo.status", "=", "active")
+                .orderBy("lastactivedate", "desc");
 
             //   console.log(users[0].expiredate);
             
