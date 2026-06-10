@@ -76,8 +76,10 @@ exports.dashboardlistAll = async (req, res) => {
                 'registerinfo.status as status'
                )
               .leftJoin("registergroupinfo", "registerinfo.ugroupid", "=", "registergroupinfo.ugroupid")
-              .where("lastactivedate", ">=", startOfTodayMillis) // Records created from the beginning of today
-              .where("lastactivedate", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
+            //   .where("lastactivedate", ">=", startOfTodayMillis) // Records created from the beginning of today
+            //   .where("lastactivedate", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startOfTodayMillis) // Records created from the beginning of today
+                .where("create_at", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
               .where("registerinfo.status", "=", "active")
               .orderBy("lastactivedate", "desc");
             
@@ -491,7 +493,8 @@ exports.dashboardusers = async (req, res) => {
                 .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
                 .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
                 .where("registerinfo.status", "=", "active")
-                .orderBy("lastactivedate", "desc");
+                .orderBy("create_at", "desc");
+                // .orderBy("lastactivedate", "desc");
 
             //   console.log(users[0].expiredate);
             
