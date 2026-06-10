@@ -70,8 +70,8 @@ exports.traffic_volume = async (req, res) => {
                 .where("idcardnumber", "!=", "null")
                 // .where("lastactivedate", ">=", selectedDate.startTimestamp) // Records created from the beginning of today
                 // .where("lastactivedate", "<", selectedDate.endTimestamp)    // Records created before the beginning of tomorrow
-                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
-                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", selectedDate.startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", selectedDate.endTimestamp)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count") 
 
@@ -79,8 +79,8 @@ exports.traffic_volume = async (req, res) => {
                 .where("passportnumber", "!=", "null")
                 // .where("lastactivedate", ">=", selectedDate.startTimestamp) // Records created from the beginning of today
                 // .where("lastactivedate", "<", selectedDate.endTimestamp)    // Records created before the beginning of tomorrow
-                .where("create_at", ">=", startTimestamp) // Records created from the beginning of today
-                .where("create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", selectedDate.startTimestamp) // Records created from the beginning of today
+                .where("create_at", "<", selectedDate.endTimestamp)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count") 
 
