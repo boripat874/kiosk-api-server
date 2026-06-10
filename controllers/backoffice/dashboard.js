@@ -485,6 +485,7 @@ exports.dashboardusers = async (req, res) => {
                     "registerinfo.passportnumber as passportnumber",
                     "registerinfo.phone as phone",
                     "registerinfo.lastactivedate as lastactivedate", 
+                    "registerinfo.create_at as create_at",
                     "registerinfo.expiredate as expiredate",
                     'registerinfo.status as status'
                 )
