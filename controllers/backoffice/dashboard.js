@@ -72,16 +72,18 @@ exports.dashboardlistAll = async (req, res) => {
                 "registerinfo.passportnumber as passportnumber",
                 "registerinfo.phone as phone",
                 "registerinfo.lastactivedate as lastactivedate", 
+                "registerinfo.create_at as create_at",
                  "registerinfo.expiredate as expiredate",
                 'registerinfo.status as status'
                )
               .leftJoin("registergroupinfo", "registerinfo.ugroupid", "=", "registergroupinfo.ugroupid")
             //   .where("lastactivedate", ">=", startOfTodayMillis) // Records created from the beginning of today
             //   .where("lastactivedate", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
-                .where("create_at", ">=", startOfTodayMillis) // Records created from the beginning of today
-                .where("create_at", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
-              .where("registerinfo.status", "=", "active")
-                .orderBy("create_at", "desc");
+                .where("registerinfo.create_at", ">=", startOfTodayMillis) 
+                .where("registerinfo.create_at", "<", endOfTodayMillis)    
+                
+                .where("registerinfo.status", "=", "active")
+                .orderBy("registerinfo.create_at", "desc");
             //   .orderBy("lastactivedate", "desc");
             
               const resultusers = await Promise.all(
