@@ -114,9 +114,9 @@
         <button type="submit" id="loginBtn">Login</button>
     </form>
     
-    <!-- <div id="errorMessage" class="error-msg">
+    <div id="errorMessage" class="error-msg">
         ไม่พบพารามิเตอร์การเชื่อมต่อจากระบบเครือข่าย (Missing switch_url)
-    </div> -->
+    </div>
 </div>
 
 <script>
@@ -139,10 +139,10 @@
             console.log("WLC Redirect Target Set To: " + switchUrl);
         } else {
             // หากไม่มีค่า switch_url จะทำการปิดปุ่มล็อกอินเพื่อความปลอดภัย และแสดง Error
-            // loginBtn.disabled = true;
-            // loginBtn.style.backgroundColor = '#cccccc';
-            // loginBtn.style.cursor = 'not-allowed';
-            // errorDiv.style.display = 'block';
+            loginBtn.disabled = true;
+            loginBtn.style.backgroundColor = '#cccccc';
+            loginBtn.style.cursor = 'not-allowed';
+            errorDiv.style.display = 'block';
         }
     };
 </script>
