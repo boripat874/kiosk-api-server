@@ -81,7 +81,8 @@ exports.dashboardlistAll = async (req, res) => {
                 .where("create_at", ">=", startOfTodayMillis) // Records created from the beginning of today
                 .where("create_at", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
               .where("registerinfo.status", "=", "active")
-              .orderBy("lastactivedate", "desc");
+                .orderBy("create_at", "desc");
+            //   .orderBy("lastactivedate", "desc");
             
               const resultusers = await Promise.all(
                 users.map(async (user) => {
