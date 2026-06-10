@@ -492,8 +492,9 @@ exports.dashboardusers = async (req, res) => {
                 .leftJoin("registergroupinfo", "registerinfo.ugroupid", "=", "registergroupinfo.ugroupid")
                 //   .where("lastactivedate", ">=", startTimestamp) // Records created from the beginning of today
                 //   .where("lastactivedate", "<", endTimestamp)    // Records created before the beginning of tomorrow
-                .where("registerinfo.create_at", ">=", startTimestamp) // Records created from the beginning of today
-                .where("registerinfo.create_at", "<", endTimestamp)    // Records created before the beginning of tomorrow
+                .where("registerinfo.create_at", ">=", startTimestamp) 
+                .where("registerinfo.create_at", "<", endTimestamp)    
+                
                 .where("registerinfo.status", "=", "active")
                 .orderBy("registerinfo.create_at", "desc");
                 // .orderBy("lastactivedate", "desc");
