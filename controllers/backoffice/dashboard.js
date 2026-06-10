@@ -519,7 +519,7 @@ exports.dashboardusers = async (req, res) => {
                       idcardnumber: user.idcardnumber,
                       passportnumber: user.passportnumber,
                       phone: user.phone,
-                      lastactivedate: date.format(new Date(user.create_at*1000),"YYYY-MM-DD HH:mm:ss"),
+                      lastactivedate: date.format(new Date(user.create_at*1000),"YYYY-MM-DD HH:mm"),
                       expiredate: date.format(new Date(user.expiredate*1000),"YYYY-MM-DD"),
                     }
                 }
