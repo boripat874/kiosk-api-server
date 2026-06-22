@@ -28,6 +28,8 @@
     "router": "^2.2.0",
     "swagger-ui-express": "^5.0.1",
     "uuidv4": "^6.2.13",
+    "winston": "^3.19.0",
+    "winston-syslog": "^2.7.1",
     "xml2js": "^0.6.2",
     "yamljs": "^0.3.0"
   }

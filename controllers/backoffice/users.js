@@ -10,6 +10,30 @@ const fs = require("fs");
 const https = require('https');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+const os = require('os');
+
+// ฟังก์ชันดึง IP Address หลักของเครื่อง
+function getLocalIP() {
+    const interfaces = os.networkInterfaces();
+    for (const devName in interfaces) {
+        const iface = interfaces[devName];
+        for (let i = 0; i < iface.length; i++) {
+            const alias = iface[i];
+            // กรองหา IPv4 ที่ไม่ใช่ loopback (127.0.0.1)
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                return alias.address;
+            }
+        }
+    }
+    return '127.0.0.1'; // ค่าเริ่มต้นถ้าหาไม่เจอ
+}
+
+// ใช้งาน:
+const currentIP = getLocalIP();
+
+// syslog
+const winston = require('winston');
+require('winston-syslog').Syslog;
 
 
 const {
@@ -45,6 +69,113 @@ const AuthCisco = {
     httpsAgent: ciscoAgent
     
 }
+
+// ฟังก์ชันสำหรับแยกข้อมูล CEF
+function parseCefSyslog(message) {
+    const text = message.toString().trim();
+    
+    // 1. ตรวจสอบว่าเป็นข้อความ CEF หรือไม่ (ค้นหาคำว่า CEF:0)
+    const cefIndex = text.indexOf('CEF:0|');
+    if (cefIndex === -1) {
+        return { type: 'Standard Syslog', raw: text }; // ถ้าไม่ใช่ CEF ให้คืนค่าเดิมกลับไป
+    }
+
+    // 2. ดึงเฉพาะส่วนของ CEF ออกมา (ตัด Header ของ Syslog ทิ้งไป)
+    const cefString = text.substring(cefIndex);
+    
+    // 3. แยกส่วนประกอบหลักด้วยเครื่องหมาย | (จำกัดแค่ 7 ช่องแรกเพื่อรักษา Extension ไว้)
+    const parts = cefString.split('|');
+    
+    // ถ้าโครงสร้างไม่ครบตามมาตรฐาน CEF เบื้องต้น
+    if (parts.length < 8) {
+         return { type: 'Invalid CEF', raw: text };
+    }
+
+    // 4. นำข้อมูลหลักมาเก็บเป็น Object
+    const cefData = {
+        type: 'CEF',
+        version: parts[0].replace('CEF:', ''),
+        vendor: parts[1],
+        product: parts[2],
+        versionProduct: parts[3],
+        eventId: parts[4],
+        eventName: parts[5],
+        severity: parts[6],
+        extensions: {}
+    };
+
+    // 5. ส่วนที่ 7 (index 7) ขึ้นไปคือ Extension ทั้งหมด (รวมกลับด้วย | เผื่อใน Extension มี |)
+    const extensionString = parts.slice(7).join('|').trim();
+
+    // 6. แกะ Extension ที่เป็น Key=Value
+    if (extensionString) {
+        // ใช้ Regex เพื่อจับ Key=Value (รองรับ Value ที่มีช่องว่างด้วย)
+        // รูปแบบคือ: คีย์ (ไม่มีช่องว่างหรือ =) ตามด้วย = แล้วตามด้วยค่าจนกว่าจะเจอช่องว่างที่ตามด้วยคีย์อื่น
+        const extMatches = extensionString.matchAll(/([a-zA-Z0-9_]+)=([^=]+)(?=\s+[a-zA-Z0-9_]+=|$)/g);
+        
+        for (const match of extMatches) {
+            const key = match[1];
+            const value = match[2].trim();
+            cefData.extensions[key] = value;
+        }
+    }
+
+    return cefData;
+}
+
+const cefFormatter = winston.format.printf((info) => {
+    // แยกส่วนประกอบ
+    // info.message จะได้ค่า 'Failed Login Attempt'
+    // ข้อมูลที่เหลือจะอยู่ใน info ตัวเอง
+    const { level, message, timestamp, ...ext } = info;
+
+    // ลบค่าที่ไม่จำเป็นออกจาก ext เพื่อไม่ให้ไปปนกับ CEF Header
+    delete ext.level;
+    delete ext.message;
+    delete ext.timestamp;
+
+    // จัดการ Header (ถ้าใน ext ไม่มี ให้ใช้ค่า default)
+    const vendor = ext.vendor || 'Smart Automation';
+    const product = ext.product || 'Kiosk WIFI';
+    const version = ext.version || '1.0.0';
+    const eventId = ext.eventId || '100';
+    const eventName = ext.eventName || message || 'General Event';
+    const severity = ext.severity || '7';
+
+    // ลบ Header keys ออกจาก ext เพื่อเหลือไว้แต่ Extension จริงๆ
+    ['vendor', 'product', 'version', 'eventId', 'eventName', 'severity'].forEach(k => delete ext[k]);
+
+    // Escape และแปลงเป็น String
+    const escapeCEF = (str) => {
+        if (typeof str !== 'string') str = String(str);
+        return str.replace(/\\/g, '\\\\').replace(/=/g, '\\=').replace(/\|/g, '\\|');
+    };
+
+    const extString = Object.entries(ext)
+        .filter(([_, v]) => v !== undefined && v !== null)
+        .map(([k, v]) => `${k}=${escapeCEF(v)}`)
+        .join(' ');
+
+    return `CEF:0|${vendor}|${product}|${version}|${eventId}|${eventName}|${severity}|${extString}`;
+});
+
+//ตั้งค่า Logger
+const logger = winston.createLogger({
+    levels: winston.config.syslog.levels, // เพิ่มส่วนนี้เพื่อให้รู้จักระดับ syslog
+    transports: [
+        new winston.transports.Syslog({
+            host: process.env.SYSLOG_HOST,
+            port: process.env.SYSLOG_PORT,
+            protocol: 'udp4',
+            app_name: 'Kiosk_WIFI',
+            facility: 'local0',
+            format: winston.format.combine(cefFormatter) 
+        }),
+        new winston.transports.Console({
+            format: winston.format.simple()
+        })
+    ]
+});
 
 // forgot-email ✓
 exports.forgotemail = async(req, res) => {
@@ -515,6 +646,45 @@ exports.userscreate = async (req, res) => {
 
             let phoneNumber = "+66" + phone.slice(1, 10);
 
+            const Oldaccount = await db("registerinfo")
+            .select("*")
+            .where("status", "active")
+            .andWhere(function() {
+                this.where("expiredate", ">", Math.floor(Date.now() / 1000));
+            })
+            // .where("idcardnumber", idcardnumber)
+            // .orWhere("passportnumber", passportnumber)
+            .andWhere(function() {
+            // ใช้ Grouping (วงเล็บ) เพื่อครอบเงื่อนไข ID Card หรือ Passport
+            // และเช็คว่าตัวแปรต้องไม่เป็น null หรือ undefined
+            if (idcardnumber || idcardnumber != "") {
+
+                this.where("idcardnumber", idcardnumber);
+
+            }else if (passportnumber || passportnumber != "") {
+
+                // ถ้ามี idcardnumber มาก่อนหน้า ให้ใช้ orWhere 
+                // แต่ถ้าไม่มี (กรณี idcardnumber เป็น null) ให้ใช้ where ปกติ
+                this.where("passportnumber", passportnumber);
+                
+            }
+            // กรณีที่ทั้งคู่เป็น null จะทำให้ query ส่วนนี้ว่างเปล่า 
+            // ซึ่งปลอดภัยกว่าการไป match กับค่า null ใน database
+            })
+            .first();
+
+            if(Oldaccount){
+
+                return resolve({
+
+                    status: 201,
+                    message: "User already exists",
+                    user: Oldaccount.user,
+                    password: Oldaccount.password
+                })
+
+            }
+
             if(!ugroupid){
                 return reject({status: 402, message: "ugroupid not required" });
             }
@@ -750,9 +920,23 @@ exports.userscreate = async (req, res) => {
             //     return reject({status: 402, message: `CISCO error : ${error.message}` });
             // })
 
-            
+            logger.warning('User Register Kiosk WIFI', {
+                vendor: 'Smart Automation',
+                product: 'Kiosk WIFI',
+                eventId: generateEventId(),
+                eventName: 'User Register Kiosk WIFI',
+                severity: '7',
+                src: `https://${currentIP}`,
+                suser: 'user',
+                userName: Username,
+                IDcard: idcardnumber || '',
+                Passport: passportnumber || '',
+                NameAndSurname: `${name} ${surname}`,
+                Phone: phone,
+                msg: 'Registration successful.'
+            });
 
-            resolve({
+            return resolve({
                 status: 200,
                 message: "User Add successful"
             })
