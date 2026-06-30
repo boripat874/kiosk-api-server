@@ -720,7 +720,10 @@ exports.userscreate = async (req, res) => {
             if(!usergroup){
 
                 durationTime = usergroup.duration
+
             }
+
+            const durationInMilliseconds = durationTime * 1000;
 
             //### Cisco สร้าง User
 
@@ -744,7 +747,8 @@ exports.userscreate = async (req, res) => {
 
                 // A. กำหนดตัวแปรวันที่ตามที่คุณทำไว้
                 const startDateTime = date.format((new Date()), "MM/DD/YYYY HH:mm"); // วันที่เริ่มต้น
-                const endDateTime = date.format((new Date(expiredate)), "MM/DD/YYYY 23:59"); // วันที่สิ้นสุด
+                // const endDateTime = date.format((new Date(expiredate)), "MM/DD/YYYY 23:59"); // วันที่สิ้นสุด
+                const endDateTime = date.format(new Date(Date.now() + durationInMilliseconds), "MM/DD/YYYY HH:mm");
 
                 const startDate =  new Date(); // New Date() คือ วันที่เริ่มต้น
 
@@ -756,7 +760,7 @@ exports.userscreate = async (req, res) => {
                 // 2. วันที่สิ้นสุด (เที่ยงคืนของวันหมดอายุ)
                 // ใช้ endDateTime ในการสร้างวันสิ้นสุด แต่ให้ตั้งเวลาเป็น 00:00:00 น. 
                 // โดยการสร้างจากองค์ประกอบ (Year, Month, Day) แทนการใช้สตริง
-                const endDateRef = new Date(expiredate); 
+                const endDateRef = new Date(Date.now() + durationInMilliseconds); 
                 const dateOnlyEnd = new Date(endDateRef.getFullYear(), endDateRef.getMonth(), endDateRef.getDate());
 
 
@@ -771,7 +775,7 @@ exports.userscreate = async (req, res) => {
 
                 // D. คำนวณ validDays
                 // validDays คือ จำนวนวันทั้งหมดที่สิทธิ์นี้ครอบคลุม (รวมวันเริ่มต้น)
-                // const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
+                const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
 
                 // "guestType": "Daily (default)",
                 // "fromDate": startDateTime,
@@ -782,8 +786,8 @@ exports.userscreate = async (req, res) => {
                         "portalId": process.env.PORTAl_ID,
                         "guestAccessInfo": {
                             "validDays": 1,
-                            "fromDate": "06/30/2026 12:00",
-                            "toDate": "06/30/2026 16:00",
+                            "fromDate": startDateTime,
+                            "toDate": endDateTime,
                             "location": "Bangkok",
                         },
                         "guestInfo":{
