@@ -259,6 +259,13 @@ exports.userscreate = async (req, res) => {
 
                 }
 
+                // คำนวณชั่วโมงและนาที
+                const hours = Math.floor(durationTime / 3600);
+                const minutes = Math.floor((durationTime % 3600) / 60);
+
+                // จัดรูปแบบให้เป็น 00:00
+                const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
                 const durationInMilliseconds = durationTime * 1000;
 
 
@@ -470,7 +477,8 @@ exports.userscreate = async (req, res) => {
                 status: 200,
                 message: "User Add successful",
                 user: Username,
-                password: password
+                password: password,
+                duration: formattedTime
             })
 
         }
