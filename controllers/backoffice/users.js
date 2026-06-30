@@ -935,21 +935,21 @@ exports.userscreate = async (req, res) => {
             //     return reject({status: 402, message: `CISCO error : ${error.message}` });
             // })
 
-            logger.warning('User Register Kiosk WIFI', {
-                vendor: 'Smart Automation',
-                product: 'Kiosk WIFI',
-                eventId: generateEventId(),
-                eventName: 'User Register Kiosk WIFI',
-                severity: '7',
-                src: `https://${currentIP}`,
-                suser: 'user',
-                userName: Username,
-                IDcard: idcardnumber || '',
-                Passport: passportnumber || '',
-                NameAndSurname: `${name} ${surname}`,
-                Phone: phone,
-                msg: 'Registration successful.'
-            });
+            // logger.warning('User Register Kiosk WIFI', {
+            //     vendor: 'Smart Automation',
+            //     product: 'Kiosk WIFI',
+            //     eventId: generateEventId(),
+            //     eventName: 'User Register Kiosk WIFI',
+            //     severity: '7',
+            //     src: `https://${currentIP}`,
+            //     suser: 'user',
+            //     userName: Username,
+            //     IDcard: idcardnumber || '',
+            //     Passport: passportnumber || '',
+            //     NameAndSurname: `${name} ${surname}`,
+            //     Phone: phone,
+            //     msg: 'Registration successful.'
+            // });
 
             return resolve({
                 status: 200,
