@@ -133,12 +133,33 @@ exports.userscreate = async (req, res) => {
 
             if(Oldaccount){
 
+                const usergroup = await db("registergroupinfo")
+                .select("*")
+                .where("ugroupid", 'kiosk2025')
+                .andWhere("status", "active")
+                .first();
+
+                let durationTime = 14400; // วินาที
+
+                if(usergroup){
+                    durationTime = usergroup.duration;
+                }
+
+                // คำนวณชั่วโมงและนาที
+                const hours = Math.floor(durationTime / 3600);
+                const minutes = Math.floor((durationTime % 3600) / 60);
+
+                // จัดรูปแบบให้เป็น 00:00
+                const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
                 return resolve({
 
                     status: 200,
                     message: "User already exists",
                     user: Oldaccount.user,
-                    password: Oldaccount.password
+                    password: Oldaccount.password,
+                    duration: formattedTime
+
                 })
 
             }
