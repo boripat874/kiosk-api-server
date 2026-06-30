@@ -760,10 +760,10 @@ exports.userscreate = async (req, res) => {
                 // validDays คือ จำนวนวันทั้งหมดที่สิทธิ์นี้ครอบคลุม (รวมวันเริ่มต้น)
                 const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
 
-
+                // "guestType": "Daily (default)",
                 const CiscoUserBody = {
                     "GuestUser": {
-                        "guestType": "Daily (default)",
+                        "guestType": "Internet_Cafe_Hours",
                         "portalId": process.env.PORTAl_ID,
                         "guestAccessInfo": {
                             "validDays": calculatedValidDays,
