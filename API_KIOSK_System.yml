@@ -189,6 +189,7 @@ paths:
                 message: "User Add successful"
                 user: "zoo263230009"
                 password: "zoo@843857"
+                duration: "01:00"
         "400":
           description: Invalid request
           content:
