@@ -642,7 +642,29 @@ exports.userscreate = async (req, res) => {
                 expiredate
             } = req.body;
 
-            var Username = await createUniqueIdUesr();
+            if(!ugroupid){
+                return reject({status: 402, message: "ugroupid not required" });
+            }
+
+            if(!name){
+                return reject({status: 402, message: "name not required" });
+            }
+
+            if(!surname){
+                return reject({status: 402, message: "surname not required"})
+            }
+
+            if(!password){
+                return reject({status: 402, message: "password not required"})
+            }
+
+            if(!idcardnumber && !passportnumber){
+                return reject({status: 402, message: "nationalidcard or passportcard not required"})
+            }
+
+            if(expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
+                return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
+            }
 
             let phoneNumber = "+66" + phone.slice(1, 10);
 
@@ -685,29 +707,7 @@ exports.userscreate = async (req, res) => {
 
             }
 
-            if(!ugroupid){
-                return reject({status: 402, message: "ugroupid not required" });
-            }
-
-            if(!name){
-                return reject({status: 402, message: "name not required" });
-            }
-
-            if(!surname){
-                return reject({status: 402, message: "surname not required"})
-            }
-
-            if(!password){
-                return reject({status: 402, message: "password not required"})
-            }
-
-            if(!idcardnumber && !passportnumber){
-                return reject({status: 402, message: "nationalidcard or passportcard not required"})
-            }
-
-            if(expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
-                return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
-            }
+            var Username = await createUniqueIdUesr();
 
             let durationTime = 14400;
 
@@ -763,7 +763,6 @@ exports.userscreate = async (req, res) => {
                 const endDateRef = new Date(Date.now() + durationInMilliseconds); 
                 const dateOnlyEnd = new Date(endDateRef.getFullYear(), endDateRef.getMonth(), endDateRef.getDate());
 
-
                 // C. คำนวณผลต่างระหว่างวันที่ (00:00:00 น. ทั้งคู่)
 
                 // ผลต่างเป็นมิลลิวินาทีระหว่างเที่ยงคืนถึงเที่ยงคืน
@@ -785,7 +784,7 @@ exports.userscreate = async (req, res) => {
                         "guestType": "Internet_Cafe_Hours",
                         "portalId": process.env.PORTAl_ID,
                         "guestAccessInfo": {
-                            "validDays": 1,
+                            "validDays": calculatedValidDays,
                             "fromDate": startDateTime,
                             "toDate": endDateTime,
                             "location": "Bangkok",
