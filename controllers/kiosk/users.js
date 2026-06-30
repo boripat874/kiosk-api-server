@@ -253,7 +253,7 @@ exports.userscreate = async (req, res) => {
                 .andWhere("status", "active")
                 .first();
 
-                if(!usergroup){
+                if(usergroup){
 
                     durationTime = usergroup.duration
 
