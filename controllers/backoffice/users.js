@@ -705,8 +705,21 @@ exports.userscreate = async (req, res) => {
                 return reject({status: 402, message: "nationalidcard or passportcard not required"})
             }
 
-            if (expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
+            if(expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
                 return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
+            }
+
+            let durationTime = 14400;
+
+            const usergroup = await db("registergroupinfo")
+            .select("*")
+            .where("ugroupid", 'kiosk2025')
+            .andWhere("status", "active")
+            .first();
+
+            if(!usergroup){
+
+                durationTime = usergroup.duration
             }
 
             //### Cisco สร้าง User
@@ -758,22 +771,24 @@ exports.userscreate = async (req, res) => {
 
                 // D. คำนวณ validDays
                 // validDays คือ จำนวนวันทั้งหมดที่สิทธิ์นี้ครอบคลุม (รวมวันเริ่มต้น)
-                const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
+                // const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
 
                 // "guestType": "Daily (default)",
+                // "fromDate": startDateTime,
+                // "toDate": endDateTime,
                 const CiscoUserBody = {
                     "GuestUser": {
                         "guestType": "Internet_Cafe_Hours",
                         "portalId": process.env.PORTAl_ID,
                         "guestAccessInfo": {
-                            "validDays": calculatedValidDays,
-                            "fromDate": startDateTime,
-                            "toDate": endDateTime,
-                            "location": "Bangkok"
+                            "validDays": 1,
+                            "fromDate": "06/30/2026 12:00",
+                            "toDate": "06/30/2026 16:00",
+                            "location": "Bangkok",
                         },
                         "guestInfo":{
                                 "company":"Cisco",
-                                "emailAddress":"thailand@cisco.com",
+                                "emailAddress":"zoo@cisco.com",
                                 "firstName":name,
                                 "lastName":surname,
                                 "notificationLanguage":"English",
