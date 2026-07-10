@@ -63,15 +63,15 @@ exports.dashboardlistAll = async (req, res) => {
 
             const countnationalidcard = await db("registerinfo")
                 .where("idcardnumber", "!=", "null")
-                .where("lastactivedate", ">=", startOfTodayMillis) // Records created from the beginning of today
-                .where("lastactivedate", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startOfTodayMillis) // Records created from the beginning of today
+                .where("create_at", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count") 
 
             const countpassportcard = await db("registerinfo")
                 .where("passportnumber", "!=", "null")
-                .where("lastactivedate", ">=", startOfTodayMillis) // Records created from the beginning of today
-                .where("lastactivedate", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
+                .where("create_at", ">=", startOfTodayMillis) // Records created from the beginning of today
+                .where("create_at", "<", endOfTodayMillis)    // Records created before the beginning of tomorrow
                 .where("status", "=", "active")
                 .count("* as count") 
  
