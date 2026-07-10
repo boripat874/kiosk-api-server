@@ -41,13 +41,13 @@ exports.dashboardlistAll = async (req, res) => {
             // จุดเริ่มต้นของวันนี้ (00:00:00)
             const today = new Date(now); // สร้างสำเนา
             today.setHours(0, 0, 0, 0);
-            startTimestamp = Math.floor(today.getTime() / 1000);
+            const startTimestamp = Math.floor(today.getTime() / 1000);
 
             // จุดเริ่มต้นของวันพรุ่งนี้ (00:00:00)
             const tomorrow = new Date(today);
             tomorrow.setDate(today.getDate() + 1);
             // ชั่วโมงถูกตั้งค่าเป็น 00:00:00.000 แล้ว
-            endTimestamp = Math.floor(tomorrow.getTime() / 1000);
+            const endTimestamp = Math.floor(tomorrow.getTime() / 1000);
 
             // const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
             // const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0); // Start of tomorrow
@@ -57,8 +57,8 @@ exports.dashboardlistAll = async (req, res) => {
             // const endOfTodayMillis =  Math.floor(endOfToday.getTime() / 1000);
 
             // Convert milliseconds to seconds (Unix timestamp)
-            const startOfTodayMillis =  today;
-            const endOfTodayMillis =  tomorrow;
+            const startOfTodayMillis =  startTimestamp;
+            const endOfTodayMillis =  endTimestamp;
 
 
             const countnationalidcard = await db("registerinfo")
