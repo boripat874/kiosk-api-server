@@ -52,12 +52,14 @@ exports.dashboardlistAll = async (req, res) => {
             // const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
             // const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0); // Start of tomorrow
 
-            const startOfToday = today;
-            const endOfToday = tomorrow; // Start of tomorrow
+            // // Convert milliseconds to seconds (Unix timestamp)
+            // const startOfTodayMillis =  Math.floor(startOfToday.getTime() / 1000);
+            // const endOfTodayMillis =  Math.floor(endOfToday.getTime() / 1000);
 
             // Convert milliseconds to seconds (Unix timestamp)
-            const startOfTodayMillis =  Math.floor(startOfToday.getTime() / 1000);
-            const endOfTodayMillis =  Math.floor(endOfToday.getTime() / 1000);
+            const startOfTodayMillis =  today;
+            const endOfTodayMillis =  tomorrow;
+
 
             const countnationalidcard = await db("registerinfo")
                 .where("idcardnumber", "!=", "null")
