@@ -939,7 +939,7 @@ exports.userscreate = async (req, res) => {
             // })
 
             // logger.warning('User Register Kiosk WIFI', {
-            //     vendor: 'Smart Automation',
+            //     vendor: 'DITTO',
             //     product: 'Kiosk WIFI',
             //     eventId: generateEventId(),
             //     eventName: 'User Register Kiosk WIFI',

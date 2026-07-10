@@ -37,8 +37,23 @@ exports.dashboardlistAll = async (req, res) => {
             await checkAuthorizetion(req);
 
             const now = new Date();
-            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-            const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0); // Start of tomorrow
+
+            // จุดเริ่มต้นของวันนี้ (00:00:00)
+            const today = new Date(now); // สร้างสำเนา
+            today.setHours(0, 0, 0, 0);
+            startTimestamp = Math.floor(today.getTime() / 1000);
+
+            // จุดเริ่มต้นของวันพรุ่งนี้ (00:00:00)
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            // ชั่วโมงถูกตั้งค่าเป็น 00:00:00.000 แล้ว
+            endTimestamp = Math.floor(tomorrow.getTime() / 1000);
+
+            // const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+            // const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0); // Start of tomorrow
+
+            const startOfToday = today;
+            const endOfToday = tomorrow; // Start of tomorrow
 
             // Convert milliseconds to seconds (Unix timestamp)
             const startOfTodayMillis =  Math.floor(startOfToday.getTime() / 1000);
