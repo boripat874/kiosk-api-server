@@ -45,214 +45,196 @@ const AuthCisco = {
 
 // Users add ✅
 exports.userscreate = async (req, res) => {
-  const {
-    visitortype,
-    name,
-    surname,
-    idcardnumber,
-    passportnumber,
-    phone,
-    expiredate
-  } = req.body;
+  // ตั้งค่า Timeout Promise
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject({ status: 402, message: "Request timed out" }), timeout)
+  );
 
-  // 2. สร้าง Key สำหรับ Lock โดยใช้เลขบัตร ป้องกันคนยิงซ้ำ
-  const identifierKey = idcardnumber || passportnumber;
+  const usersaddLogic = (async () => {
+    // 1. Validate API Key
+    await validateApiKey(req);
 
-  // 3. ตรวจสอบว่ากำลังทำงานของคนนี้อยู่หรือไม่?
-  if (identifierKey && processingRequests.has(identifierKey)) {
-    return res.status(429).json({ message: "กำลังประมวลผลข้อมูลของคุณ กรุณารอสักครู่ (Please wait...)" });
-  }
+    const {
+      visitortype,
+      name,
+      surname,
+      idcardnumber,
+      passportnumber,
+      phone,
+      expiredate
+    } = req.body;
 
-  // 4. ถ้าเพิ่งเข้ามาครั้งแรก ให้ทำการ Lock ไว้
-  if (identifierKey) processingRequests.add(identifierKey);
+    const ugroupid = "kiosk2025";
+    const routerid = "";
 
-  try {
-    // ตั้งค่า Timeout Promise
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject({ status: 402, message: "Request timed out" }), timeout)
-    );
+    // 2. Validate Inputs
+    if (!name) throw { status: 402, message: "name is required" };
+    if (!surname) throw { status: 402, message: "surname is required" };
+    if (!idcardnumber && !passportnumber) {
+      throw { status: 402, message: "nationalidcard or passportcard is required" };
+    }
+    if (!expiredate || isNaN(Date.parse(`${expiredate} 00:00`))) {
+      throw { status: 402, message: "expiredate is invalid or required" };
+    }
 
-    const usersaddLogic = (async () => {
-      // Validate API Key
-      await validateApiKey(req);
+    let phoneNumber = "+66" + phone.slice(1, 10);
 
-      const ugroupid = "kiosk2025";
-      const routerid = "";
-
-      // Validate Inputs
-      if (!name) throw { status: 402, message: "name is required" };
-      if (!surname) throw { status: 402, message: "surname is required" };
-      if (!idcardnumber && !passportnumber) {
-        throw { status: 402, message: "nationalidcard or passportcard is required" };
-      }
-      if (!expiredate || isNaN(Date.parse(`${expiredate} 00:00`))) {
-        throw { status: 402, message: "expiredate is invalid or required" };
-      }
-
-      let phoneNumber = "+66" + phone.slice(1, 10);
-
-      // Check Existing Account
-      const Oldaccount = await db("registerinfo")
-        .select("*")
-        .where("status", "active")
-        .andWhere("expiredate", ">", Math.floor(Date.now() / 1000))
-        .andWhere(function () {
-          if (idcardnumber) {
-            this.where("idcardnumber", idcardnumber);
-          } else if (passportnumber) {
-            this.where("passportnumber", passportnumber);
-          }
-        })
-        .first();
-
-      // ดึงข้อมูล duration
-      let durationTime = 14400;
-      const usergroup = await db("registergroupinfo")
-        .select("*")
-        .where("ugroupid", "kiosk2025")
-        .andWhere("status", "active")
-        .first();
-
-      if (usergroup) {
-        durationTime = usergroup.duration;
-      }
-
-      const hours = Math.floor(durationTime / 3600);
-      const minutes = Math.floor((durationTime % 3600) / 60);
-      const formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-
-      if (Oldaccount) {
-        return {
-          status: 200,
-          message: "User already exists",
-          user: Oldaccount.user,
-          password: Oldaccount.password,
-          duration: formattedTime
-        };
-      }
-
-      // Generate New User Credentials
-      const Username = await createUniqueIdUesr();
-      const password = await createUniqueIdPassword();
-
-      // คำนวณวันที่สำหรับ Cisco
-      const durationInMilliseconds = durationTime * 1000;
-      const startDateTime = date.format(new Date(), "MM/DD/YYYY HH:mm");
-      const endDateTime = date.format(new Date(Date.now() + durationInMilliseconds), "MM/DD/YYYY HH:mm");
-
-      const startDate = new Date();
-      const dateOnlyStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-      const endDateRef = new Date(Date.now() + durationInMilliseconds);
-      const dateOnlyEnd = new Date(endDateRef.getFullYear(), endDateRef.getMonth(), endDateRef.getDate());
-
-      const normalizedTimeDifference = dateOnlyEnd.getTime() - dateOnlyStart.getTime();
-      const daysBetween = normalizedTimeDifference / (1000 * 3600 * 24);
-      const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
-
-      const CiscoUserBody = {
-        GuestUser: {
-          guestType: "Daily (default)",
-          portalId: process.env.PORTAl_ID,
-          guestAccessInfo: {
-            validDays: calculatedValidDays,
-            fromDate: startDateTime,
-            toDate: endDateTime,
-            location: "Bangkok"
-          },
-          guestInfo: {
-            company: "Cisco",
-            emailAddress: "thailand@cisco.com",
-            firstName: name,
-            lastName: surname,
-            notificationLanguage: "English",
-            password: password,
-            phoneNumber: phoneNumber,
-            userName: Username,
-            smsServiceProvider: "Global Default"
-          }
+    // 3. Check Existing Account
+    const Oldaccount = await db("registerinfo")
+      .select("*")
+      .where("status", "active")
+      .andWhere("expiredate", ">", Math.floor(Date.now() / 1000))
+      .andWhere(function () {
+        if (idcardnumber) {
+          this.where("idcardnumber", idcardnumber);
+        } else if (passportnumber) {
+          this.where("passportnumber", passportnumber);
         }
-      };
+      })
+      .first();
 
-      // Create User in Cisco ISE
-      try {
-        await axios.post(
-          `https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser`,
-          CiscoUserBody,
-          AuthCisco
-        );
-      } catch (error) {
-        let ciscoErrorTitle = error.response?.data?.ERSResponse?.messages[0]?.title || error.message;
-        let httpStatus = error.response?.status || 402;
-        throw {
-          status: httpStatus,
-          message: `CISCO error: ${ciscoErrorTitle}`
-        };
-      }
+    // ดึงข้อมูล duration
+    let durationTime = 14400;
+    const usergroup = await db("registergroupinfo")
+      .select("*")
+      .where("ugroupid", "kiosk2025")
+      .andWhere("status", "active")
+      .first();
 
-      // Get Created User Info from Cisco ISE
-      let userID = "0";
-      try {
-        const Usesresponse = await axios.get(
-          `https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser/name/${Username}`,
-          AuthCisco
-        );
+    if (usergroup) {
+      durationTime = usergroup.duration;
+    }
 
-        const searchResult = Usesresponse.data;
-        if (!searchResult || !searchResult.GuestUser || !searchResult.GuestUser.id) {
-          throw { status: 402, message: "CISCO User not found after creation." };
-        }
-        userID = searchResult.GuestUser.id;
-      } catch (error) {
-        if (error.status) throw error;
-        let ciscoErrorTitle = error.response?.data?.ERSResponse?.messages[0]?.title || error.message;
-        let httpStatus = error.response?.status || 402;
-        throw {
-          status: httpStatus,
-          message: `CISCO error Get User: ${ciscoErrorTitle}`
-        };
-      }
+    const hours = Math.floor(durationTime / 3600);
+    const minutes = Math.floor((durationTime % 3600) / 60);
+    const formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 
-      // Insert into Database
-      await db("registerinfo").insert({
-        id: uuid(),
-        routerid: userID,
-        ugroupid,
-        visitortype,
-        name,
-        surname,
-        user: Username,
-        password,
-        idcardnumber: idcardnumber || null,
-        passportnumber: passportnumber || null,
-        phone,
-        expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000
-      });
-
+    if (Oldaccount) {
       return {
         status: 200,
-        message: "User Add successful",
-        user: Username,
-        password: password,
+        message: "User already exists",
+        user: Oldaccount.user,
+        password: Oldaccount.password,
         duration: formattedTime
       };
-    })();
+    }
 
-    // Execute Logic with Timeout
+    // 4. Generate New User Credentials
+    const Username = await createUniqueIdUesr();
+    const password = await createUniqueIdPassword();
+
+    // คำนวณวันที่สำหรับ Cisco
+    const durationInMilliseconds = durationTime * 1000;
+    const startDateTime = date.format(new Date(), "MM/DD/YYYY HH:mm");
+    const endDateTime = date.format(new Date(Date.now() + durationInMilliseconds), "MM/DD/YYYY HH:mm");
+
+    const startDate = new Date();
+    const dateOnlyStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const endDateRef = new Date(Date.now() + durationInMilliseconds);
+    const dateOnlyEnd = new Date(endDateRef.getFullYear(), endDateRef.getMonth(), endDateRef.getDate());
+
+    const normalizedTimeDifference = dateOnlyEnd.getTime() - dateOnlyStart.getTime();
+    const daysBetween = normalizedTimeDifference / (1000 * 3600 * 24);
+    const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
+
+    const CiscoUserBody = {
+      GuestUser: {
+        guestType: "Daily (default)",
+        portalId: process.env.PORTAl_ID,
+        guestAccessInfo: {
+          validDays: calculatedValidDays,
+          fromDate: startDateTime,
+          toDate: endDateTime,
+          location: "Bangkok"
+        },
+        guestInfo: {
+          company: "Cisco",
+          emailAddress: "thailand@cisco.com",
+          firstName: name,
+          lastName: surname,
+          notificationLanguage: "English",
+          password: password,
+          phoneNumber: phoneNumber,
+          userName: Username,
+          smsServiceProvider: "Global Default"
+        }
+      }
+    };
+
+    // 5. Create User in Cisco ISE
+    try {
+      await axios.post(
+        `https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser`,
+        CiscoUserBody,
+        AuthCisco
+      );
+    } catch (error) {
+      let ciscoErrorTitle = error.response?.data?.ERSResponse?.messages[0]?.title || error.message;
+      let httpStatus = error.response?.status || 402;
+      throw {
+        status: httpStatus,
+        message: `CISCO error: ${ciscoErrorTitle}`
+      };
+    }
+
+    // 6. Get Created User Info from Cisco ISE
+    let userID = "0";
+    try {
+      const Usesresponse = await axios.get(
+        `https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser/name/${Username}`,
+        AuthCisco
+      );
+
+      const searchResult = Usesresponse.data;
+      if (!searchResult || !searchResult.GuestUser || !searchResult.GuestUser.id) {
+        throw { status: 402, message: "CISCO User not found after creation." };
+      }
+      userID = searchResult.GuestUser.id;
+    } catch (error) {
+      if (error.status) throw error; // Re-throw custom error
+      let ciscoErrorTitle = error.response?.data?.ERSResponse?.messages[0]?.title || error.message;
+      let httpStatus = error.response?.status || 402;
+      throw {
+        status: httpStatus,
+        message: `CISCO error Get User: ${ciscoErrorTitle}`
+      };
+    }
+
+    // 7. Insert into Database (ทำงานเพียงครั้งเดียวแน่นอนเมื่อทุกอย่างสำเร็จ)
+    await db("registerinfo").insert({
+      id: uuid(),
+      routerid: userID,
+      ugroupid,
+      visitortype,
+      name,
+      surname,
+      user: Username,
+      password,
+      idcardnumber: idcardnumber || null,
+      passportnumber: passportnumber || null,
+      phone,
+      expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000
+    });
+
+    return {
+      status: 200,
+      message: "User Add successful",
+      user: Username,
+      password: password,
+      duration: formattedTime
+    };
+  })();
+
+  // Execute Logic with Timeout
+  try {
     const result = await Promise.race([usersaddLogic, timeoutPromise]);
     await eventlog_kiosk(req, "เพิ่มรายการผู้เข้าใช้งานใหม่", "kioskuser");
     return res.status(200).json(result);
-
   } catch (error) {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      // สมมติว่ามี function handleError อยู่
-      return handleError(error, res); 
-    }
-  } finally {
-    // 5. 🔥 ไม่ว่าจะสำเร็จหรือเกิด Error ต้องปลด Lock ออกเสมอ
-    if (identifierKey) {
-      processingRequests.delete(identifierKey);
+      return handleError(error, res);
     }
   }
 };
