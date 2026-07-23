@@ -135,6 +135,11 @@ exports.userscreate = async (req, res) => {
       const timeDifferenceInSeconds = Math.floor((now - createdAt) / 1000);
       const remainingTimeInSeconds = durationTime - timeDifferenceInSeconds;
 
+      console.log("durationTime >>: ",durationTime);
+      console.log("now >>: ",now);
+      console.log("createdAt >>: ",createdAt);
+      console.log("remainingTimeInSeconds >>: ",remainingTimeInSeconds);
+
       // ถ้ายังไม่หมดอายุ
       if (remainingTimeInSeconds > 0) {
 
