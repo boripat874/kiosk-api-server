@@ -125,7 +125,21 @@ exports.userscreate = async (req, res) => {
     const minutes = Math.floor((durationTime % 3600) / 60);
     const formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 
-    if (Oldaccount) {
+    const createdAt = new Date(Oldaccount.created_at);
+    const now = new Date();
+    const timeDifference = now - createdAt;
+    const remainingTimeInSeconds = durationTime - Math.floor(timeDifference / 1000);
+
+    if (remainingTimeInSeconds <= 0) {
+
+      // If the old account has expired, you can create a new account.
+
+      // Update status to inactive
+      // await db("registerinfo")
+      //   .where("id", Oldaccount.id)
+      //   .update({ status: "inactive" });
+
+    }else if (Oldaccount) {
       return {
         status: 200,
         message: "User already exists",
