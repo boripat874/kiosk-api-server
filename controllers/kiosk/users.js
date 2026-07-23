@@ -9,11 +9,6 @@ const fs = require("fs");
 const https = require('https');
 // const { console } = require("inspector");
 
-// 1. สร้างตัวแปรเก็บสถานะ Lock ไว้ **นอก** function exports (เพื่อให้คงค่าข้าม Request ได้)
-const processingRequests = new Set();
-
-
-
 const {
     upload,
     checkString,
