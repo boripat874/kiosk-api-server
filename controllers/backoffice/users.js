@@ -1205,7 +1205,7 @@ exports.usersdelete = async (req, res) => {
             await db("registerinfo")
             .select("id", "routerid", "ugroupid")
             .where({ id })
-            .first()
+            .first() 
             .then( async(rows) => {
 
                 if (!rows || rows === undefined) {
