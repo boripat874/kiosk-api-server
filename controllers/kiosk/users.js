@@ -9,6 +9,9 @@ const fs = require("fs");
 const https = require('https');
 // const { console } = require("inspector");
 
+// เก็บ Promise ของ Request ที่กำลังประมวลผลอยู่ (Key: เลขบัตร/พาสปอร์ต, Value: Promise)
+const activeRequests = new Map();
+
 const {
     upload,
     checkString,
@@ -45,6 +48,28 @@ const AuthCisco = {
 
 // Users add ✅
 exports.userscreate = async (req, res) => {
+  const {
+    visitortype,
+    name,
+    surname,
+    idcardnumber,
+    passportnumber,
+    phone,
+    expiredate
+  } = req.body;
+
+  const identifierKey = idcardnumber || passportnumber;
+
+  // 1. ถ้ามี Request ของเลขบัตรนี้กำลังรันอยู่ ให้รอผลลัพธ์จาก Request นั้นเลย (ไม่ยิง Cisco ซ้ำ)
+  if (identifierKey && activeRequests.has(identifierKey)) {
+    try {
+      const existingResult = await activeRequests.get(identifierKey);
+      return res.status(200).json(existingResult);
+    } catch (err) {
+      if (err.status) return res.status(err.status).json({ message: err.message });
+      return handleError(err, res);
+    }
+  }
 
   // ตั้งค่า Timeout Promise
   const timeoutPromise = new Promise((_, reject) =>
@@ -52,23 +77,13 @@ exports.userscreate = async (req, res) => {
   );
 
   const usersaddLogic = (async () => {
-    // 1. Validate API Key
+    // Validate API Key
     await validateApiKey(req);
-
-    const {
-      visitortype,
-      name,
-      surname,
-      idcardnumber,
-      passportnumber,
-      phone,
-      expiredate
-    } = req.body;
 
     const ugroupid = "kiosk2025";
     const routerid = "";
 
-    // 2. Validate Inputs
+    // Validate Inputs
     if (!name) throw { status: 402, message: "name is required" };
     if (!surname) throw { status: 402, message: "surname is required" };
     if (!idcardnumber && !passportnumber) {
@@ -80,7 +95,7 @@ exports.userscreate = async (req, res) => {
 
     let phoneNumber = "+66" + phone.slice(1, 10);
 
-    // 3. Check Existing Account
+    // Check Existing Account ใน DB
     const Oldaccount = await db("registerinfo")
       .select("*")
       .where("status", "active")
@@ -120,7 +135,7 @@ exports.userscreate = async (req, res) => {
       };
     }
 
-    // 4. Generate New User Credentials
+    // Generate New User Credentials
     const Username = await createUniqueIdUesr();
     const password = await createUniqueIdPassword();
 
@@ -162,7 +177,7 @@ exports.userscreate = async (req, res) => {
       }
     };
 
-    // 5. Create User in Cisco ISE
+    // Create User in Cisco ISE
     try {
       await axios.post(
         `https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser`,
@@ -178,7 +193,7 @@ exports.userscreate = async (req, res) => {
       };
     }
 
-    // 6. Get Created User Info from Cisco ISE
+    // Get Created User Info from Cisco ISE
     let userID = "0";
     try {
       const Usesresponse = await axios.get(
@@ -192,7 +207,7 @@ exports.userscreate = async (req, res) => {
       }
       userID = searchResult.GuestUser.id;
     } catch (error) {
-      if (error.status) throw error; // Re-throw custom error
+      if (error.status) throw error;
       let ciscoErrorTitle = error.response?.data?.ERSResponse?.messages[0]?.title || error.message;
       let httpStatus = error.response?.status || 402;
       throw {
@@ -201,7 +216,7 @@ exports.userscreate = async (req, res) => {
       };
     }
 
-    // 7. Insert into Database (ทำงานเพียงครั้งเดียวแน่นอนเมื่อทุกอย่างสำเร็จ)
+    // Insert into Database
     await db("registerinfo").insert({
       id: uuid(),
       routerid: userID,
@@ -226,9 +241,14 @@ exports.userscreate = async (req, res) => {
     };
   })();
 
-  // Execute Logic with Timeout
+  // 2. ผูก Promise ของ Request นี้ลง Map
+  const executionPromise = Promise.race([usersaddLogic, timeoutPromise]);
+  if (identifierKey) {
+    activeRequests.set(identifierKey, executionPromise);
+  }
+
   try {
-    const result = await Promise.race([usersaddLogic, timeoutPromise]);
+    const result = await executionPromise;
     await eventlog_kiosk(req, "เพิ่มรายการผู้เข้าใช้งานใหม่", "kioskuser");
     return res.status(200).json(result);
   } catch (error) {
@@ -236,6 +256,11 @@ exports.userscreate = async (req, res) => {
       return res.status(error.status).json({ message: error.message });
     } else {
       return handleError(error, res);
+    }
+  } finally {
+    // 3. ปลด Lock เมื่อทำงานจบเสมอ (ไม่ว่าจะสำเร็จหรือล้มเหลว)
+    if (identifierKey) {
+      activeRequests.delete(identifierKey);
     }
   }
 };
