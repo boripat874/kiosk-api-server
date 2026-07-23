@@ -51,17 +51,6 @@ const AuthCisco = {
 // Users add ✅
 exports.userscreate = async (req, res) => {
 
-    // 2. สร้าง Key สำหรับ Lock โดยใช้เลขบัตร ป้องกันคนยิงซ้ำ
-  const identifierKey = idcardnumber || passportnumber;
-
-  // 3. ตรวจสอบว่ากำลังทำงานของคนนี้อยู่หรือไม่?
-  if (identifierKey && processingRequests.has(identifierKey)) {
-    return res.status(429).json({ message: "กำลังประมวลผลข้อมูลของคุณ กรุณารอสักครู่ (Please wait...)" });
-  }
-
-  // 4. ถ้าเพิ่งเข้ามาครั้งแรก ให้ทำการ Lock ไว้
-  if (identifierKey) processingRequests.add(identifierKey);
-
   // ตั้งค่า Timeout Promise
   const timeoutPromise = new Promise((_, reject) =>
     setTimeout(() => reject({ status: 402, message: "Request timed out" }), timeout)
@@ -252,11 +241,6 @@ exports.userscreate = async (req, res) => {
       return res.status(error.status).json({ message: error.message });
     } else {
       return handleError(error, res);
-    }
-  } finally {
-    // 5. 🔥 ไม่ว่าจะสำเร็จหรือเกิด Error ต้องปลด Lock ออกเสมอ
-    if (identifierKey) {
-      processingRequests.delete(identifierKey);
     }
   }
 };
