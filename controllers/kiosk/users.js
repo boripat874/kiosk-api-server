@@ -128,7 +128,7 @@ exports.userscreate = async (req, res) => {
     // เช็คก่อนว่ามี Oldaccount หรือไม่
     if (Oldaccount) {
 
-      const createdAt = new Date(Oldaccount.created_at);
+      const createdAt = new Date(Oldaccount.created_at * 1000);
       const now = new Date();
       
       // ลบกันได้ตัวเลขมิลลิวินาที -> แปลงเป็นวินาที
