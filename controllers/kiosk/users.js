@@ -130,7 +130,34 @@ exports.userscreate = async (req, res) => {
     const timeDifference = now - createdAt;
     const remainingTimeInSeconds = durationTime - Math.floor(timeDifference / 1000);
 
-    if (remainingTimeInSeconds <= 0) {
+    // เช็คก่อนว่ามี Oldaccount หรือไม่
+    if (Oldaccount) {
+
+      const createdAt = new Date(Oldaccount.created_at);
+      const now = new Date();
+      
+      // ลบกันได้ตัวเลขมิลลิวินาที -> แปลงเป็นวินาที
+      const timeDifferenceInSeconds = Math.floor((now - createdAt) / 1000);
+      const remainingTimeInSeconds = durationTime - timeDifferenceInSeconds;
+
+      // ถ้ายังไม่หมดอายุ
+      if (remainingTimeInSeconds > 0) {
+
+        return {
+          status: 200,
+          message: "User already exists",
+          user: Oldaccount.user,
+          password: Oldaccount.password,
+          duration: formattedTime // เวลาที่เหลืออยู่จริง
+        };
+      }
+
+      // ถ้าหมดอายุแล้ว (remainingTimeInSeconds <= 0)
+      // สามารถอัปเดต status เป็น inactive หรือปล่อยไหลไปสร้าง accountใหม่
+      // await db("registerinfo").where("id", Oldaccount.id).update({ status: "inactive" });
+    }
+
+    if (remainingTimeInSeconds <= 0 && Oldaccount) {
 
       // If the old account has expired, you can create a new account.
 

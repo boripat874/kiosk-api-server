@@ -8,13 +8,33 @@
 
 // console.log(futureDate);
 
-let durationTime = 14520; // วินาที
+// let durationTime = 14520; // วินาที
 
-// คำนวณชั่วโมงและนาที
-const hours = Math.floor(durationTime / 3600);
-const minutes = Math.floor((durationTime % 3600) / 60);
+// // คำนวณชั่วโมงและนาที
+// const hours = Math.floor(durationTime / 3600);
+// const minutes = Math.floor((durationTime % 3600) / 60);
 
-// จัดรูปแบบให้เป็น 00:00
-const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+// // จัดรูปแบบให้เป็น 00:00
+// const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-console.log(formattedTime); // ผลลัพธ์: "04:00"
+// console.log(formattedTime); // ผลลัพธ์: "04:00"
+
+const createdAt = new Date("2026-07-23T09:00:00.000Z"); // เวลาสมมติ
+const now = new Date(); // เวลาปัจจุบัน
+
+// 1. ลอง log ดูทีละตัว (จะเห็นเป็นข้อความเวลา)
+console.log("now:", now);
+console.log("createdAt:", createdAt);
+
+// 2. จับมาลบกันตรงๆ (จะออกมาเป็นตัวเลขมิลลิวินาที)
+const timeDifference = Math.floor((now - createdAt));
+console.log("เวลาที่ลบกันได้ (มิลลิวินาที):", timeDifference);
+
+// 3. แปลงเป็นวินาที (จะได้ตัวเลขวินาที)
+const seconds = Math.floor(timeDifference / 1000);
+console.log("แปลงเป็นวินาที:", seconds);
+
+// 4. แปลงเป็นชั่วโมงและนาที
+const hours = Math.floor(seconds / 3600);
+const minutes = Math.floor((seconds % 3600) / 60);
+console.log(`เวลาที่ผ่านไป: ${hours} ชั่วโมง ${minutes} นาที`);
