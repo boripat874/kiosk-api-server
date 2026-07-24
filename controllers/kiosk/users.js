@@ -101,14 +101,21 @@ exports.userscreate = async (req, res) => {
       .where("status", "active")
       .andWhere("expiredate", ">", Math.floor(Date.now() / 1000))
       .andWhere(function () {
-        if (idcardnumber) {
-          this.where("idcardnumber", idcardnumber);
-        } else if (passportnumber) {
-          this.where("passportnumber", passportnumber);
-        }
-      })
-      .first();
 
+        if (idcardnumber) {
+
+          this.where("idcardnumber", idcardnumber);
+
+        } else if (passportnumber) {
+
+          this.where("passportnumber", passportnumber);
+
+        }
+
+      })
+      .orderBy("create_at", "desc")
+      .first();
+      
     // ดึงข้อมูล duration
     let durationTime = 14400;
     const usergroup = await db("registergroupinfo")
@@ -135,10 +142,10 @@ exports.userscreate = async (req, res) => {
       const timeDifferenceInSeconds = Math.floor((now - createdAt) / 1000);
       const remainingTimeInSeconds = durationTime - timeDifferenceInSeconds;
 
-      console.log("durationTime >>: ",durationTime);
-      console.log("now >>: ",now);
-      console.log("createdAt >>: ",createdAt);
-      console.log("remainingTimeInSeconds >>: ",remainingTimeInSeconds);
+      // console.log("durationTime >>: ",durationTime);
+      // console.log("now >>: ",now);
+      // console.log("createdAt >>: ",createdAt);
+      // console.log("remainingTimeInSeconds >>: ",remainingTimeInSeconds);
 
       // ถ้ายังไม่หมดอายุ
       if (remainingTimeInSeconds > 0) {

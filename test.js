@@ -19,7 +19,7 @@
 
 // console.log(formattedTime); // ผลลัพธ์: "04:00"
 
-const createdAt = new Date("2026-07-23T09:00:00.000Z"); // เวลาสมมติ
+const createdAt = new Date("2026-07-23T08:24:00.000Z"); // เวลาสมมติ
 const now = new Date(); // เวลาปัจจุบัน
 
 // 1. ลอง log ดูทีละตัว (จะเห็นเป็นข้อความเวลา)
