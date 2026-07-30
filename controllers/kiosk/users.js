@@ -386,7 +386,7 @@ exports.userget = async (req, res) => {
             //     });
             // }
 
-            const lastactivedate_ = userData.lastactivedate || false ? date.format(new Date(userData.lastactivedate *1000, "YYYY-MM-DD HH:mm")) : "-";
+            // const lastactivedate_ = userData.lastactivedate || false ? date.format(new Date(userData.lastactivedate *1000, "YYYY-MM-DD HH:mm")) : "-";
 
             const resultUserData = {
 
@@ -403,7 +403,7 @@ exports.userget = async (req, res) => {
               phone: userData.phone,
               created_at: date.format(new Date(userData.create_at * 1000), "YYYY-MM-DD HH:mm"),
               expiredate: date.format(new Date(userData.expiredate * 1000), "YYYY-MM-DD HH:mm"),
-              lastactivedate: lastactivedate_,
+              // lastactivedate: lastactivedate_,
 
             };
 
