@@ -65,17 +65,15 @@ exports.userscreate = async (req, res) => {
   const identifierKey = idcardnumber || passportnumber;
 
   if(terminalid_ == null || terminalid_ == ""){
-    return {
-      status: 402,
+    return res.status(402).json({
       message: "terminalid not found",
-    };
+    })
   }
 
   if(transactionid_ == null || transactionid_ == ""){
-    return {
-      status: 402,
+    return res.status(402).json({
       message: "transactionid not found",
-    };
+    })
   }
 
   const db_transactionid = await db
@@ -84,7 +82,9 @@ exports.userscreate = async (req, res) => {
   .where({ transactionid: transactionid_ });
 
   if (db_transactionid.length) {
-    return { status: 402, message: "You have already completed this transaction." };
+    return res.status(402).json({
+      message: "You have already completed this transaction.",
+    })
   }
 
   // 1. ถ้ามี Request ของเลขบัตรนี้กำลังรันอยู่ ให้รอผลลัพธ์จาก Request นั้นเลย (ไม่ยิง Cisco ซ้ำ)
