@@ -571,7 +571,7 @@ exports.userslistAll = async (req, res) => {
                     phone: user.phone,
                     visitortype: user.visitortype,
                     create_at: date.format(new Date(user.create_at*1000), "YYYY-MM-DD HH:mm"),
-                    expirationdate: date.format(new Date(user.expiredate*1000), "YYYY-MM-DD"),
+                    expirationdate: date.format(new Date(user.expiredate*1000), "YYYY-MM-DD HH:mm"),
                     duration: timeString
                 }
             })

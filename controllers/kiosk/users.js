@@ -399,7 +399,7 @@ exports.userget = async (req, res) => {
                 phone: userData.phone,
                 created_at: date.format(new Date(userData.create_at * 1000), "YYYY-MM-DD HH:mm"),
                 expiredate: date.format(new Date(userData.expiredate * 1000), "YYYY-MM-DD HH:mm"),
-                lastactivedate: userData.lastactivedate,
+                lastactivedate: date.format(new Date(userData.lastactivedate *1000, "YYYY-MM-DD HH:mm")),
             };
 
             resolve({
