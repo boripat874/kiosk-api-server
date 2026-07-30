@@ -367,23 +367,26 @@ exports.userget = async (req, res) => {
 
             if(!userData){
                 return resolve({message: "User not found" });
-            }else{
-                await db("registerinfo")
-                .where("id", userData.id)
-                .update({
-                    lastactivedate : Math.floor(Date.now() / 1000)
-                }).then(async () => {
-
-                    /*await db("registerinfo")
-                    .select("lastactivedate")
-                    .where("id", userData.id)
-                    .first()
-                    .then((resolve) => {
-                        lastactivedate = resolve.lastactivedate;
-                    })*/
-
-                });
             }
+            // else{
+            //     await db("registerinfo")
+            //     .where("id", userData.id)
+            //     .update({
+            //         lastactivedate : Math.floor(Date.now() / 1000)
+            //     }).then(async () => {
+
+            //         /*await db("registerinfo")
+            //         .select("lastactivedate")
+            //         .where("id", userData.id)
+            //         .first()
+            //         .then((resolve) => {
+            //             lastactivedate = resolve.lastactivedate;
+            //         })*/
+
+            //     });
+            // }
+
+            const lastactivedate_ = userData.lastactivedate ? date.format(new Date(userData.lastactivedate *1000, "YYYY-MM-DD HH:mm")) : "-";
 
             const resultUserData = {
                 id: userData.id,
@@ -399,7 +402,7 @@ exports.userget = async (req, res) => {
                 phone: userData.phone,
                 created_at: date.format(new Date(userData.create_at * 1000), "YYYY-MM-DD HH:mm"),
                 expiredate: date.format(new Date(userData.expiredate * 1000), "YYYY-MM-DD HH:mm"),
-                lastactivedate: date.format(new Date(userData.lastactivedate *1000, "YYYY-MM-DD HH:mm")),
+                lastactivedate: lastactivedate_,
             };
 
             resolve({
