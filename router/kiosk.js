@@ -7,7 +7,7 @@ const rateLimit = require('express-rate-limit');
 
 // กำหนดเงื่อนไข: 1 IP ยิง API สร้าง User ได้แค่ 1 ครั้ง ภายใน 10 วินาที
 const createUserLimiter = rateLimit({
-  windowMs: 10 * 1000, // 10 วินาที
+  windowMs: 3 * 1000, // 10 วินาที
   max: 1, // รับแค่ 1 Request
   message: { status: 429, message: "คุณทำรายการเร็วเกินไป กรุณารอสักครู่" },
   standardHeaders: true, 
