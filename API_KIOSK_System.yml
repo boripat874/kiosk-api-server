@@ -143,6 +143,9 @@ paths:
             schema:
               type: object
               properties:
+                terminalid:
+                  type: string
+                  description: รหัสเครื่อง Kiosk
                 transactionid:
                   type: string
                   description: รหัสธุรกรรม
@@ -168,14 +171,15 @@ paths:
                   type: string
                   description: วันที่หมดอายุใช้งาน
               example:
-                transactionid: "TID0000001"
+                terminalid: "T0000001"
+                transactionid: "TX0000001"
                 visitortype: "ผู้มาติดต่อราชการ"
-                name: "N12"
-                surname: "SN12"
-                idcardnumber: "NNC12"
-                passportnumber: "PPC12"
+                name: "name01"
+                surname: "surname01"
+                idcardnumber: "15247856895874"
+                passportnumber: ""
                 phone: "0987894562"
-                expiredate: "2025-12-03"
+                expiredate: "2026-07-30"
 
       responses:
         "200":

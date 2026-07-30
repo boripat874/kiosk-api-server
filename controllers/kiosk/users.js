@@ -59,10 +59,17 @@ exports.userscreate = async (req, res) => {
     
   } = req.body;
 
+  const terminalid_ = req.body.terminalid || "";
   const transactionid_ = req.body.transactionid || "";
 
-
   const identifierKey = idcardnumber || passportnumber;
+
+  if(terminalid_ == null || terminalid_ == ""){
+    return {
+      status: 402,
+      message: "terminalid not found",
+    };
+  }
 
   if(transactionid_ == null || transactionid_ == ""){
     return {
@@ -278,7 +285,9 @@ exports.userscreate = async (req, res) => {
       idcardnumber: idcardnumber || null,
       passportnumber: passportnumber || null,
       phone,
-      expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000
+      expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000,
+      terminalid: terminalid_,
+      transactionid: transactionid_
     });
 
     return {
