@@ -276,8 +276,6 @@ exports.userscreate = async (req, res) => {
       };
     }
 
-    
-
     // Insert into Database
     await db("registerinfo").insert({
       id: uuid(),
@@ -291,7 +289,7 @@ exports.userscreate = async (req, res) => {
       idcardnumber: idcardnumber || null,
       passportnumber: passportnumber || null,
       phone,
-      expiredate: Math.floor((Date.now() / 1000) + durationTime),
+      expiredate: Math.floor(((Date.now() + durationInMilliseconds) / 1000)),
       terminalid: terminalid_,
       transactionid: transactionid_
     });
@@ -359,15 +357,19 @@ exports.userget = async (req, res) => {
                 this.where("idcardnumber", `${searchUser}`)
                 this.orWhere("passportnumber", `${searchUser}`)
             })
-            .andWhere("expiredate", ">=", nowInLocalTime)
+            .andWhere("expiredate", ">", nowInLocalTime)
             .orderBy("create_at","desc")
             .first();
+
 
            // let lastactivedate = userData ? userData.lastactivedate : null;
 
             if(!userData){
-                return resolve({message: "User not found" });
+              return resolve({message: "User not found" });
             }
+
+            // console.log("userData create_at: ", userData.create_at);
+            // console.log("userData expiredate: ", userData.expiredate);
             // else{
             //     await db("registerinfo")
             //     .where("id", userData.id)
@@ -386,7 +388,7 @@ exports.userget = async (req, res) => {
             //     });
             // }
 
-            // const lastactivedate_ = userData.lastactivedate || false ? date.format(new Date(userData.lastactivedate *1000, "YYYY-MM-DD HH:mm")) : "-";
+            const lastactivedate_ = userData.lastactivedate != undefined ? date.format(new Date(userData.lastactivedate *1000), "YYYY-MM-DD HH:mm") : "-";
 
             const resultUserData = {
 

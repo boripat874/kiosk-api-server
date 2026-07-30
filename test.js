@@ -41,6 +41,6 @@
 
 const durationInSeconds = 3600; // 1 ชั่วโมงในวินาที
 
-console.log("เวลาปัจจุบัน:", new Date());
+console.log("เวลาปัจจุบัน:",Math.floor(Date.now() / 1000));
 console.log("เวลาหลังจาก 1 ชั่วโมง:", new Date(Date.now() + durationInSeconds * 1000));
 console.log("เวลาหลังจาก 1 ชั่วโมง:", Math.floor(Date.now() / 1000 + durationInSeconds));

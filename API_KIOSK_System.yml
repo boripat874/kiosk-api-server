@@ -85,25 +85,25 @@ paths:
                       expiredate:
                         type: string
                         description: วันที่หมดอายุใช้งาน
-                      lastactivedate:
-                        type: string
-                        description: วันที่เข้าใช้งานล่าสุด
+                      # lastactivedate:
+                      #   type: string
+                      #   description: วันที่เข้าใช้งานล่าสุด
               example:
                 data:
                   id: "06d4a3d2-86ab-45a5-9f1c-3d943326c690"
                   routerid: "0b09624e-4837-44d3-87df-8183ca53569d"
                   ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
                   visitortype: "ผู้มาติดต่อราชการ"
-                  name: "N11"
-                  surname: "SN11"
-                  user: "U11"
-                  password: "P11"
-                  idcardnumber: "NNC11"
-                  passportnumber: "PPC11"
+                  name: "TEstname"
+                  surname: "surname"
+                  user: "zoo267300001"
+                  password: "zoo@73139"
+                  idcardnumber: "1814445597091"
+                  passportnumber: ""
                   phone: "0987894561"
                   created_at: "2025-07-11 12:00"
                   expiredate: "2025-07-11 13:00"
-                  lastactivedate: "2025-12-03 10:44"
+                  # lastactivedate: "2025-12-03 10:44"
         "400":
             description: Invalid request
             content:
@@ -1629,8 +1629,6 @@ paths:
                 message: "Unauthorized"
 
 
-
-
   # report
   /api/reportlistall:
     get:
@@ -1887,7 +1885,6 @@ paths:
                     description: Error message
               example:
                 message: "Unauthorized"
-
 
   # event log
   /api/eventloglistall:
@@ -2245,6 +2242,160 @@ paths:
                     description: Success message
               example:
                 message: "Administrator Delete successful"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+
+  # setting kiosk wifi
+  /api/listkioskSettings:
+    get:
+      summary: List kiosk wifi setting
+      description: Retrieve a list of kiosk wifi settings.
+      tags:
+        - Setting
+      security:
+        - api_key: []
+        - Authorization: []
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    description: Total number of settings
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kioskid:
+                          type: string
+                          description: Kiosk ID
+                        terminalid:
+                          type: string
+                          description: Terminal ID
+                        duration:
+                          type: string
+                          description: Duration of usage
+                        details:
+                          type: string
+                          description: Details of the kiosk
+                        create_at:
+                          type: string
+                          description: Creation timestamp
+                        update_at:
+                          type: string
+                          description: Last update timestamp
+                        status:
+                          type: string
+                          description: Status of the kiosk setting
+
+              example:
+                total: 1
+                result:
+                  - kioskid: "019fb26c-4680-4758"
+                    terminalid: "SM25-0022-000001"
+                    duration: "01:00"
+                    details: "รายละเอียดเครื่อง kiosk"
+                    create_at: "1785400603"
+                    update_at: "1785400603"
+                    status: "active"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Invalid request"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+              example:
+                message: "Unauthorized"
+  /api/settingupdate:
+    put:
+      summary: Update kiosk wifi setting
+      description: Update kiosk wifi setting.
+      tags:
+        - Setting
+      security:
+        - api_key: []
+        - Authorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kioskid:
+                  type: string
+                  description: kioskid
+                terminalid:
+                  type: string
+                  description: รหัสเครื่อง kiosk
+                duration:
+                  type: string
+                  description: ระยะเวลาใช้งาน
+                details:
+                  type: string
+                  description: รายละเอียดเครื่อง kiosk
+            example:
+              kioskid: "019fb26c-4680-4758"
+              terminalid: "SM25-0022-000001"
+              duration: "01:00"
+              details: "รายละเอียดเครื่อง kiosk"
+
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+              example:
+                message: "Seting successful"
         "400":
           description: Invalid request
           content:

@@ -6,6 +6,7 @@ const eventlog = require("../controllers/backoffice/eventlog");
 const login = require("../controllers/backoffice/login");
 const administrator = require("../controllers/backoffice/administrator");
 const users = require("../controllers/backoffice/users");
+const setting = require("../controllers/backoffice/settings");
 
 // dashboard
 router.get("/dashboardlistall", dashboard.dashboardlistAll);
@@ -42,5 +43,10 @@ router.get("/eventloglistall", eventlog.eventloglistAll);
 router.post("/login", login.signin);
 router.get("/checklogin", login.checklogin);
 router.get("/logout", login.logout);
+
+//setting
+router.put("/settingupdate",setting.kioskSettings);
+router.get("/listkioskSettings", setting.listkioskSettings);
+
 
 module.exports = router
