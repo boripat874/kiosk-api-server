@@ -642,6 +642,22 @@ exports.userscreate = async (req, res) => {
                 expiredate
             } = req.body;
 
+            const transactionid_ = req.body.transactionid || "";
+
+            if(transactionid_ == null || transactionid_ == ""){
+                return reject({status: 402, message: "ransactionid not found"});
+            }
+
+            const db_transactionid = await db
+            .select("transactionid")
+            .from("registerinfo")
+            .where({ transactionid: transactionid_ });
+
+            if (db_transactionid.length) {
+
+                return reject({status: 402, message: "You have already completed this transaction."});
+            }
+
             if(!ugroupid){
                 return reject({status: 402, message: "ugroupid not required" });
             }
@@ -904,6 +920,8 @@ exports.userscreate = async (req, res) => {
                         passportnumber : passportnumber || null,
                         phone,
                         expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000,
+                        terminalid: "-",
+                        transactionid: transactionid_
                     })
 
                 }).catch((error) => {

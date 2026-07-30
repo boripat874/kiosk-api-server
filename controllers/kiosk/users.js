@@ -55,7 +55,6 @@ exports.userscreate = async (req, res) => {
     idcardnumber,
     passportnumber,
     phone,
-    expiredate,
     
   } = req.body;
 
@@ -116,17 +115,22 @@ exports.userscreate = async (req, res) => {
     if (!idcardnumber && !passportnumber) {
       throw { status: 402, message: "nationalidcard or passportcard is required" };
     }
-    if (!expiredate || isNaN(Date.parse(`${expiredate} 00:00`))) {
-      throw { status: 402, message: "expiredate is invalid or required" };
-    }
+    // if (!expiredate || isNaN(Date.parse(`${expiredate} 00:00`))) {
+    //   throw { status: 402, message: "expiredate is invalid or required" };
+    // }
 
     let phoneNumber = "+66" + phone.slice(1, 10);
+
+    const now_Oldaccount = new Date();
+
+    const startOfDay = Math.floor(new Date(now_Oldaccount.getFullYear(), now_Oldaccount.getMonth(), now_Oldaccount.getDate(), 0, 0, 0).getTime() / 1000);
+    const endOfDay = Math.floor(new Date(now_Oldaccount.getFullYear(), now_Oldaccount.getMonth(), now_Oldaccount.getDate(), 23, 59, 59).getTime() / 1000);
 
     // Check Existing Account ใน DB
     const Oldaccount = await db("registerinfo")
       .select("*")
       .where("status", "active")
-      .andWhere("expiredate", ">", Math.floor(Date.now() / 1000))
+      .whereBetween("expiredate", [startOfDay, endOfDay])
       .andWhere(function () {
 
         if (idcardnumber) {
@@ -272,6 +276,8 @@ exports.userscreate = async (req, res) => {
       };
     }
 
+    
+
     // Insert into Database
     await db("registerinfo").insert({
       id: uuid(),
@@ -285,7 +291,7 @@ exports.userscreate = async (req, res) => {
       idcardnumber: idcardnumber || null,
       passportnumber: passportnumber || null,
       phone,
-      expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000,
+      expiredate: Math.floor(Date.now() / 1000) + durationTime,
       terminalid: terminalid_,
       transactionid: transactionid_
     });
@@ -391,7 +397,8 @@ exports.userget = async (req, res) => {
                 idcardnumber: userData.idcardnumber,
                 passportnumber: userData.passportnumber,
                 phone: userData.phone,
-                expiredate: userData.expiredate,
+                created_at: date.format(new Date(userData.create_at * 1000), "YYYY-MM-DD HH:mm"),
+                expiredate: date.format(new Date(userData.expiredate * 1000), "YYYY-MM-DD HH:mm"),
                 lastactivedate: userData.lastactivedate,
             };
 
