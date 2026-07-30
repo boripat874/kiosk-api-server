@@ -84,7 +84,7 @@ exports.userscreate = async (req, res) => {
   .where({ transactionid: transactionid_ });
 
   if (db_transactionid.length) {
-    return reject({ status: 402, message: "You have already completed this transaction." });
+    return { status: 402, message: "You have already completed this transaction." };
   }
 
   // 1. ถ้ามี Request ของเลขบัตรนี้กำลังรันอยู่ ให้รอผลลัพธ์จาก Request นั้นเลย (ไม่ยิง Cisco ซ้ำ)
