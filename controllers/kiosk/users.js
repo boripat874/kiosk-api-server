@@ -386,23 +386,25 @@ exports.userget = async (req, res) => {
             //     });
             // }
 
-            const lastactivedate_ = userData.lastactivedate ? date.format(new Date(userData.lastactivedate *1000, "YYYY-MM-DD HH:mm")) : "-";
+            const lastactivedate_ = userData.lastactivedate || false ? date.format(new Date(userData.lastactivedate *1000, "YYYY-MM-DD HH:mm")) : "-";
 
             const resultUserData = {
-                id: userData.id,
-                routerid: userData.routerid,
-                ugroupid: userData.ugroupid,
-                visitortype: userData.visitortype,
-                name: userData.name,
-                surname: userData.surname,
-                user: userData.user,
-                password: userData.password,
-                idcardnumber: userData.idcardnumber,
-                passportnumber: userData.passportnumber,
-                phone: userData.phone,
-                created_at: date.format(new Date(userData.create_at * 1000), "YYYY-MM-DD HH:mm"),
-                expiredate: date.format(new Date(userData.expiredate * 1000), "YYYY-MM-DD HH:mm"),
-                lastactivedate: lastactivedate_,
+
+              id: userData.id,
+              routerid: userData.routerid,
+              ugroupid: userData.ugroupid,
+              visitortype: userData.visitortype,
+              name: userData.name,
+              surname: userData.surname,
+              user: userData.user,
+              password: userData.password,
+              idcardnumber: userData.idcardnumber,
+              passportnumber: userData.passportnumber,
+              phone: userData.phone,
+              created_at: date.format(new Date(userData.create_at * 1000), "YYYY-MM-DD HH:mm"),
+              expiredate: date.format(new Date(userData.expiredate * 1000), "YYYY-MM-DD HH:mm"),
+              lastactivedate: lastactivedate_,
+
             };
 
             resolve({
