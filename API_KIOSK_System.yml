@@ -143,6 +143,9 @@ paths:
             schema:
               type: object
               properties:
+                transactionid:
+                  type: string
+                  description: รหัสธุรกรรม
                 visitortype:
                   type: string
                   description: ประเภทผู้เข้าใช้งาน
@@ -165,6 +168,7 @@ paths:
                   type: string
                   description: วันที่หมดอายุใช้งาน
               example:
+                transactionid: "TID0000001"
                 visitortype: "ผู้มาติดต่อราชการ"
                 name: "N12"
                 surname: "SN12"
