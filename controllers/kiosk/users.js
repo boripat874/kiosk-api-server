@@ -291,7 +291,7 @@ exports.userscreate = async (req, res) => {
       idcardnumber: idcardnumber || null,
       passportnumber: passportnumber || null,
       phone,
-      expiredate: Math.floor(Date.now() / 1000) + durationTime,
+      expiredate: Math.floor((Date.now() / 1000) + durationTime),
       terminalid: terminalid_,
       transactionid: transactionid_
     });
@@ -350,17 +350,17 @@ exports.userget = async (req, res) => {
             const nowInLocalTime = Math.floor(Date.now() / 1000);
 
             // console.log("nowInLocalTime: ", nowInLocalTime);
+            const nowDate = new Date();
 
             const userData = await db("registerinfo")
             .select("*")
             .where("status", "active")
             .andWhere(function() {
-
                 this.where("idcardnumber", `${searchUser}`)
                 this.orWhere("passportnumber", `${searchUser}`)
-
             })
-            .andWhere("expiredate", ">", nowInLocalTime)
+            .andWhere("expiredate", ">=", nowInLocalTime)
+            .orderBy("create_at","desc")
             .first();
 
            // let lastactivedate = userData ? userData.lastactivedate : null;
