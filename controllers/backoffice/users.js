@@ -639,7 +639,7 @@ exports.userscreate = async (req, res) => {
                 idcardnumber,
                 passportnumber,
                 phone,
-                terminalid,
+                duration
                 // expiredate
             } = req.body;
 
@@ -648,6 +648,17 @@ exports.userscreate = async (req, res) => {
             if(transactionid_ == null || transactionid_ == ""){
                 return reject({status: 402, message: "ransactionid not found"});
             }
+
+            if (!duration === undefined || isNaN(Date.parse(`2000-01-01 ${duration}`))) {
+                return reject({
+                status: 402,
+                message: "duration not required or duration format Invalid",
+                });
+            }
+
+            
+
+
 
             const db_transactionid = await db
             .select("transactionid")
@@ -730,21 +741,10 @@ exports.userscreate = async (req, res) => {
 
             var Username = await createUniqueIdUesr();
 
-            let durationTime = 14400;
+            const [hours, minutes] = duration.split(":").map(Number);
+            const totalSeconds = hours * 3600 + minutes * 60;
 
-            const kioskproperty = await db("kioskproperty")
-            .select("*")
-            .where("terminalid", terminalid)
-            .andWhere("status", "active")
-            .first();
-
-            if(!kioskproperty){
-
-                durationTime = kioskproperty.duration
-
-            }
-
-            const durationInMilliseconds = durationTime * 1000;
+            const durationInMilliseconds = totalSeconds * 1000;
 
             //### Cisco สร้าง User
 

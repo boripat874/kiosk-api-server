@@ -156,29 +156,28 @@ exports.userscreate = async (req, res) => {
       .first();
 
     // ดึงข้อมูล duration
-    // let durationTime = 14400;
-    // const kioskproperty = await db("kioskproperty")
-    //   .select("*")
-    //   .where("terminalid", terminalid)
-    //   .andWhere("status", "active")
-    //   .first();
-
-    // if(!kioskproperty){
-
-    //   durationTime = kioskproperty.duration
-
-    // }
-      
-    
-    const usergroup = await db("registergroupinfo")
+    let durationTime = 14400;
+    const kioskproperty = await db("kioskproperty")
       .select("*")
-      .where("ugroupid", "kiosk2025")
+      .where("terminalid", terminalid)
       .andWhere("status", "active")
       .first();
 
-    if (usergroup) {
-      durationTime = usergroup.duration;
+    if(!kioskproperty){
+
+      durationTime = kioskproperty.duration
+
     }
+    
+    // const usergroup = await db("registergroupinfo")
+    //   .select("*")
+    //   .where("ugroupid", "kiosk2025")
+    //   .andWhere("status", "active")
+    //   .first();
+
+    // if (usergroup) {
+    //   durationTime = usergroup.duration;
+    // }
 
     const hours = Math.floor(durationTime / 3600);
     const minutes = Math.floor((durationTime % 3600) / 60);

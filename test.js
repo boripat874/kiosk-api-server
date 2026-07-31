@@ -39,8 +39,15 @@
 // const minutes = Math.floor((seconds % 3600) / 60);
 // console.log(`เวลาที่ผ่านไป: ${hours} ชั่วโมง ${minutes} นาที`);
 
-const durationInSeconds = 3600; // 1 ชั่วโมงในวินาที
+// const durationInSeconds = 3600; // 1 ชั่วโมงในวินาที
 
-console.log("เวลาปัจจุบัน:",Math.floor(Date.now() / 1000));
-console.log("เวลาหลังจาก 1 ชั่วโมง:", new Date(Date.now() + durationInSeconds * 1000));
-console.log("เวลาหลังจาก 1 ชั่วโมง:", Math.floor(Date.now() / 1000 + durationInSeconds));
+// console.log("เวลาปัจจุบัน:",Math.floor(Date.now() / 1000));
+// console.log("เวลาหลังจาก 1 ชั่วโมง:", new Date(Date.now() + durationInSeconds * 1000));
+// console.log("เวลาหลังจาก 1 ชั่วโมง:", Math.floor(Date.now() / 1000 + durationInSeconds));
+
+const duration = "01:00";
+
+const [hours, minutes] = duration.split(":").map(Number);
+            const totalSeconds = hours * 3600 + minutes * 60;
+
+            console.log(totalSeconds);
