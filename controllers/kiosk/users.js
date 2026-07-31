@@ -159,7 +159,7 @@ exports.userscreate = async (req, res) => {
     let durationTime = 14400;
     const kioskproperty = await db("kioskproperty")
       .select("*")
-      .where("terminalid", terminalid)
+      .where("terminalid", terminalid_)
       .andWhere("status", "active")
       .first();
 
