@@ -165,6 +165,8 @@ exports.userscreate = async (req, res) => {
       .andWhere("status", "active")
       .first();
 
+    console.log(kioskproperty)
+
     if(kioskproperty == null || kioskproperty != undefined){
 
       durationTime = kioskproperty.duration
