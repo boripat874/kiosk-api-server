@@ -646,7 +646,7 @@ exports.userscreate = async (req, res) => {
             const transactionid_ = req.body.transactionid || "";
 
             if(transactionid_ == null || transactionid_ == ""){
-                return reject({status: 402, message: "ransactionid not found"});
+                return reject({status: 402, message: "transactionid not found"});
             }
 
             if (!duration === undefined || isNaN(Date.parse(`2000-01-01 ${duration}`))) {
@@ -1027,6 +1027,7 @@ exports.usersupdate = async (req, res) => {
                 id, 
                 // routerid, 
                 ugroupid, 
+                visitortype, 
                 Username,
                 name, 
                 surname, 
@@ -1034,12 +1035,27 @@ exports.usersupdate = async (req, res) => {
                 idcardnumber, 
                 passportnumber, 
                 phone,
-                visitortype, 
-                expiredate
+                // expiredate
 
             } = req.body;
 
             // console.log(req.body);
+
+            const transactionid = req.body.transactionid || "";
+
+            if(transactionid == null || transactionid == ""){
+                return reject({status: 402, message: "transactionid not found"});
+            }
+
+            const db_transactionid = await db
+            .select("transactionid")
+            .from("registerinfo")
+            .where({ transactionid: transactionid });
+
+            if (db_transactionid.length) {
+
+                return reject({status: 402, message: "You have already completed this transaction."});
+            }
 
             let phoneNumber = "+66" + phone.slice(1, 10);
 
@@ -1091,8 +1107,8 @@ exports.usersupdate = async (req, res) => {
                         "portalId": process.env.PORTAl_ID,
                         "guestAccessInfo": {
                             "validDays": calculatedValidDays,
-                            "fromDate": startDateTime,
-                            "toDate": endDateTime,
+                            // "fromDate": startDateTime,
+                            // "toDate": endDateTime,
                             "location": "Bangkok"
                         },
                         "guestInfo":{
@@ -1133,6 +1149,10 @@ exports.usersupdate = async (req, res) => {
 
             if (ugroupid) {
                 await db("registerinfo").where({ id }).update({ ugroupid });
+            }0
+
+            if(transactionid){
+                await db("registerinfo").where({id}).update({transactionid});
             }
 
             if (name) {
@@ -1163,23 +1183,26 @@ exports.usersupdate = async (req, res) => {
                 await db("registerinfo").where({ id }).update({ visitortype });
             }
 
-            if (expiredate) {
+            // if (expiredate) {
 
-                if (expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
-                    return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
-                }
+            //     if (expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
+            //         return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
+            //     }
 
-                await db("registerinfo").where({ id })
-                .update({ 
-                    expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000 
-                });
-            }
+            //     await db("registerinfo").where({ id })
+            //     .update({ 
+            //         expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000 
+            //     });
+            // }
 
             await db("registerinfo").where({ id }).update({ update_at: Date.parse(new Date())/1000 });
 
             return resolve({message: "Users Update successful"});
+
         } catch (error) {
+
             reject(error);
+
         }
     })
 

@@ -50,4 +50,4 @@ const duration = "01:00";
 const [hours, minutes] = duration.split(":").map(Number);
     const totalSeconds = hours * 3600 + minutes * 60;
 
-    console.log(totalSeconds);
+    console.log(crypto.randomUUID());
