@@ -157,6 +157,7 @@ exports.userscreate = async (req, res) => {
 
     // ดึงข้อมูล duration
     let durationTime = 14400;
+    
     const kioskproperty = await db("kioskproperty")
       .select("*")
       .where("terminalid", terminalid_)
