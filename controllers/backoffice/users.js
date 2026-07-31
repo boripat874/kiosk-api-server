@@ -639,7 +639,8 @@ exports.userscreate = async (req, res) => {
                 idcardnumber,
                 passportnumber,
                 phone,
-                expiredate
+                terminalid,
+                // expiredate
             } = req.body;
 
             const transactionid_ = req.body.transactionid || "";
@@ -678,18 +679,21 @@ exports.userscreate = async (req, res) => {
                 return reject({status: 402, message: "nationalidcard or passportcard not required"})
             }
 
-            if(expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
-                return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
-            }
+            // if(expiredate === null || isNaN(Date.parse(`${expiredate} 00:00`))) {
+            //     return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
+            // }
 
             let phoneNumber = "+66" + phone.slice(1, 10);
+
+            const now_Oldaccount = new Date();
+
+            const startOfDay = Math.floor(new Date(now_Oldaccount.getFullYear(), now_Oldaccount.getMonth(), now_Oldaccount.getDate(), 0, 0, 0).getTime() / 1000);
+            const endOfDay = Math.floor(new Date(now_Oldaccount.getFullYear(), now_Oldaccount.getMonth(), now_Oldaccount.getDate(), 23, 59, 59).getTime() / 1000);
 
             const Oldaccount = await db("registerinfo")
             .select("*")
             .where("status", "active")
-            .andWhere(function() {
-                this.where("expiredate", ">", Math.floor(Date.now() / 1000));
-            })
+            .whereBetween("expiredate", [startOfDay, endOfDay])
             // .where("idcardnumber", idcardnumber)
             // .orWhere("passportnumber", passportnumber)
             .andWhere(function() {
@@ -709,6 +713,7 @@ exports.userscreate = async (req, res) => {
             // กรณีที่ทั้งคู่เป็น null จะทำให้ query ส่วนนี้ว่างเปล่า 
             // ซึ่งปลอดภัยกว่าการไป match กับค่า null ใน database
             })
+            .orderBy("create_at", "desc")
             .first();
 
             if(Oldaccount){
@@ -727,15 +732,15 @@ exports.userscreate = async (req, res) => {
 
             let durationTime = 14400;
 
-            const usergroup = await db("registergroupinfo")
+            const kioskproperty = await db("kioskproperty")
             .select("*")
-            .where("ugroupid", 'kiosk2025')
+            .where("terminalid", terminalid)
             .andWhere("status", "active")
             .first();
 
-            if(!usergroup){
+            if(!kioskproperty){
 
-                durationTime = usergroup.duration
+                durationTime = kioskproperty.duration
 
             }
 
@@ -903,7 +908,6 @@ exports.userscreate = async (req, res) => {
                         return reject({status: 402, message: "CISCO User not found." });
                     }
 
-
                     // const currentDate = new Date();
                     // currentDate.setDate(currentDate.getDate() + 1);
 
@@ -919,7 +923,7 @@ exports.userscreate = async (req, res) => {
                         idcardnumber : idcardnumber || null,
                         passportnumber : passportnumber || null,
                         phone,
-                        expiredate: new Date(`${expiredate} 23:59`).getTime() / 1000,
+                        expiredate: Math.floor(((Date.now() + durationInMilliseconds) / 1000)),
                         terminalid: "-",
                         transactionid: transactionid_
                     })

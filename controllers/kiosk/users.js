@@ -75,10 +75,18 @@ exports.userscreate = async (req, res) => {
     })
   }
 
+  // 1. หาเวลาปัจจุบัน (หน่วยวินาที)
+  const nowInSeconds = Math.floor(Date.now() / 1000);
+
+  // 2. คำนวณเวลาถอยหลังไป 1 ชั่วโมง (3,600 วินาที)
+  const oneHourAgoInSeconds = nowInSeconds - 3600;
+
+  // 3. Query ข้อมูลในช่วง 1 ชั่วโมงที่ผ่านมา
   const db_transactionid = await db
-  .select("transactionid")
-  .from("registerinfo")
-  .where({ transactionid: transactionid_ });
+    .select("transactionid")
+    .from("registerinfo")
+    .where({ transactionid: transactionid_ })
+    .whereBetween("create_at", [oneHourAgoInSeconds, nowInSeconds]);
 
   if (db_transactionid.length) {
     return res.status(402).json({
@@ -146,9 +154,22 @@ exports.userscreate = async (req, res) => {
       })
       .orderBy("create_at", "desc")
       .first();
-      
+
     // ดึงข้อมูล duration
-    let durationTime = 14400;
+    // let durationTime = 14400;
+    // const kioskproperty = await db("kioskproperty")
+    //   .select("*")
+    //   .where("terminalid", terminalid)
+    //   .andWhere("status", "active")
+    //   .first();
+
+    // if(!kioskproperty){
+
+    //   durationTime = kioskproperty.duration
+
+    // }
+      
+    
     const usergroup = await db("registergroupinfo")
       .select("*")
       .where("ugroupid", "kiosk2025")
