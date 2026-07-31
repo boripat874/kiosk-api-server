@@ -157,17 +157,24 @@ exports.userscreate = async (req, res) => {
 
     // ดึงข้อมูล duration
     let durationTime = 14400;
-    
+    // let duration = "";
+
     const kioskproperty = await db("kioskproperty")
       .select("*")
       .where("terminalid", terminalid_)
       .andWhere("status", "active")
       .first();
 
-    if(!kioskproperty){
+    if(kioskproperty == null || kioskproperty != undefined){
 
       durationTime = kioskproperty.duration
+      // duration
+    }else{
 
+      return {
+        status: 200,
+        message: "This device has not yet been registered.",
+      };
     }
     
     // const usergroup = await db("registergroupinfo")
