@@ -159,19 +159,20 @@ exports.userscreate = async (req, res) => {
     let durationTime = 14400;
     // let duration = "";
 
-    // const kioskproperty = await db("kioskproperty")
-    //   .select("*")
-    //   .where("terminalid", terminalid_)
-    //   .andWhere("status", "active")
-    //   .first();
+    const kioskproperty = await db("kioskproperty")
+      .select("*")
+      .where("terminalid", terminalid_)
+      .andWhere("status", "active")
+      .first();
 
-    // console.log(kioskproperty)
+    console.log(kioskproperty)
 
-    // if(kioskproperty == null || kioskproperty != undefined){
+    if(kioskproperty == null || kioskproperty != undefined){
 
-    //   durationTime = kioskproperty.duration
-    //   // duration
-    // }else{
+      durationTime = kioskproperty.duration
+      // duration
+    }
+    // else{
 
     //   return {
     //     status: 200,
