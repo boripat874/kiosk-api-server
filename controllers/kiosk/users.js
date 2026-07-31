@@ -159,35 +159,35 @@ exports.userscreate = async (req, res) => {
     let durationTime = 14400;
     // let duration = "";
 
-    const kioskproperty = await db("kioskproperty")
-      .select("*")
-      .where("terminalid", terminalid_)
-      .andWhere("status", "active")
-      .first();
-
-    console.log(kioskproperty)
-
-    if(kioskproperty == null || kioskproperty != undefined){
-
-      durationTime = kioskproperty.duration
-      // duration
-    }else{
-
-      return {
-        status: 200,
-        message: "This device has not yet been registered.",
-      };
-    }
-    
-    // const usergroup = await db("registergroupinfo")
+    // const kioskproperty = await db("kioskproperty")
     //   .select("*")
-    //   .where("ugroupid", "kiosk2025")
+    //   .where("terminalid", terminalid_)
     //   .andWhere("status", "active")
     //   .first();
 
-    // if (usergroup) {
-    //   durationTime = usergroup.duration;
+    // console.log(kioskproperty)
+
+    // if(kioskproperty == null || kioskproperty != undefined){
+
+    //   durationTime = kioskproperty.duration
+    //   // duration
+    // }else{
+
+    //   return {
+    //     status: 200,
+    //     message: "This device has not yet been registered.",
+    //   };
     // }
+    
+    const usergroup = await db("registergroupinfo")
+      .select("*")
+      .where("ugroupid", "kiosk2025")
+      .andWhere("status", "active")
+      .first();
+
+    if (usergroup) {
+      durationTime = usergroup.duration;
+    }
 
     const hours = Math.floor(durationTime / 3600);
     const minutes = Math.floor((durationTime % 3600) / 60);
