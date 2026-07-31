@@ -651,13 +651,10 @@ exports.userscreate = async (req, res) => {
 
             if (!duration === undefined || isNaN(Date.parse(`2000-01-01 ${duration}`))) {
                 return reject({
-                status: 402,
-                message: "duration not required or duration format Invalid",
+                    status: 402,
+                    message: "duration not required or duration format Invalid",
                 });
             }
-
-            
-
 
 
             const db_transactionid = await db

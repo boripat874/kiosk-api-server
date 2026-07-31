@@ -171,8 +171,7 @@ exports.userscreate = async (req, res) => {
 
       durationTime = kioskproperty.duration
       // duration
-    }
-    else{
+    }else{
 
       return {
         status: 200,

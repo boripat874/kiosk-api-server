@@ -1319,20 +1319,21 @@ paths:
                 phone:
                   type: string
                   description: เบอร์โทรศัพท์
-                expiredate:
+                duration:
                   type: string
-                  description: วันที่หมดอายุใช้งาน
+                  description: เวลาหหมดอายุใช้งาน
               example:
                 routerid: "4bb65d5b-d936-4e20-b5a1-c8302ec3dea1"
                 ugroupid: "ec80a622-7522-4561-84e7-7d8b7351ddde"
                 visitortype: "ผู้มาติดต่อราชการ"
-                name: "N12"
-                surname: "SN12"
-                password: "P12"
-                idcardnumber: "NNC12"
-                passportnumber: "PPC12"
+                name: "name"
+                surname: "surname"
+                password: "zoo@254578"
+                idcardnumber: "1574586985784"
+                passportnumber: ""
                 phone: "098XXXXXXX"
                 terminalid: "SM25-0022-000001"
+                duration: "01:00"
                 # expiredate: "2025-07-11"
 
       responses:
