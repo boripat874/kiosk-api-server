@@ -165,30 +165,30 @@ exports.userscreate = async (req, res) => {
       .andWhere("status", "active")
       .first();
 
-    console.log(kioskproperty)
+    // console.log(kioskproperty)
 
-    if(kioskproperty == null || kioskproperty != undefined){
+    if(kioskproperty){
 
       durationTime = kioskproperty.duration
       // duration
     }
-    // else{
+    else{
 
-    //   return {
-    //     status: 200,
-    //     message: "This device has not yet been registered.",
-    //   };
-    // }
-    
-    const usergroup = await db("registergroupinfo")
-      .select("*")
-      .where("ugroupid", "kiosk2025")
-      .andWhere("status", "active")
-      .first();
-
-    if (usergroup) {
-      durationTime = usergroup.duration;
+      return {
+        status: 200,
+        message: "This device has not yet been registered.",
+      };
     }
+    
+    // const usergroup = await db("registergroupinfo")
+    //   .select("*")
+    //   .where("ugroupid", "kiosk2025")
+    //   .andWhere("status", "active")
+    //   .first();
+
+    // if (usergroup) {
+    //   durationTime = usergroup.duration;
+    // }
 
     const hours = Math.floor(durationTime / 3600);
     const minutes = Math.floor((durationTime % 3600) / 60);
