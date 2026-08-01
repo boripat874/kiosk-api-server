@@ -1073,20 +1073,20 @@ exports.usersupdate = async (req, res) => {
             // ใช้ endDateTime ในการสร้างวันสิ้นสุด แต่ให้ตั้งเวลาเป็น 00:00:00 น. 
             // โดยการสร้างจากองค์ประกอบ (Year, Month, Day) แทนการใช้สตริง
             // const endDateRef = new Date(expiredate); 
-            const dateOnlyEnd = new Date(endDateRef.getFullYear(), endDateRef.getMonth(), endDateRef.getDate());
+            // const dateOnlyEnd = new Date(endDateRef.getFullYear(), endDateRef.getMonth(), endDateRef.getDate());
 
             // C. คำนวณผลต่างระหว่างวันที่ (00:00:00 น. ทั้งคู่)
 
             // ผลต่างเป็นมิลลิวินาทีระหว่างเที่ยงคืนถึงเที่ยงคืน
-            const normalizedTimeDifference = dateOnlyEnd.getTime() - dateOnlyStart.getTime();
+            // const normalizedTimeDifference = dateOnlyEnd.getTime() - dateOnlyStart.getTime();
 
             // แปลงเป็นจำนวนวันเต็ม (ไม่ต้องปัดขึ้น/ลง เพราะเป็นผลต่างระหว่างเที่ยงคืนถึงเที่ยงคืน)
             // ผลลัพธ์ที่ได้คือ 'จำนวนคืน' หรือ 'จำนวนวันเต็มที่ผ่านไประหว่างสองวัน'
-            const daysBetween = normalizedTimeDifference / (1000 * 3600 * 24); 
+            // const daysBetween = normalizedTimeDifference / (1000 * 3600 * 24); 
 
             // D. คำนวณ validDays
             // validDays คือ จำนวนวันทั้งหมดที่สิทธิ์นี้ครอบคลุม (รวมวันเริ่มต้น)
-            const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
+            // const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
 
             // Cisco แก้ไข User
             await db("registerinfo")
@@ -1105,12 +1105,12 @@ exports.usersupdate = async (req, res) => {
                     "GuestUser": {
                         "guestType": "Daily (default)",
                         "portalId": process.env.PORTAl_ID,
-                        "guestAccessInfo": {
-                            "validDays": calculatedValidDays,
+                        // "guestAccessInfo": {
+                            // "validDays": calculatedValidDays,
                             // "fromDate": startDateTime,
                             // "toDate": endDateTime,
-                            "location": "Bangkok"
-                        },
+                            // "location": "Bangkok"
+                        // },
                         "guestInfo":{
                                 "company":"Cisco",
                                 "emailAddress":"thailand@cisco.com",

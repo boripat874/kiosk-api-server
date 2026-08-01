@@ -45,14 +45,29 @@ exports.listkioskSettings = async (req, res) => {
             // ยีนยันตัวตนการเข้าสู่ระบบ
             await checkAuthorizetion(req);
 
-            const groupuserslistall = await db("kioskproperty")
+            const kioskpropertylistall = await db("kioskproperty")
                 .select("*")
                 .where("status", "=", "active")
                 .orderBy("create_at", "asc")
 
+            const resultkioskproperty = kioskpropertylistall.map((e)=>{
+
+                const seconds = e.duration;
+
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+
+                // Format to two digits with leading zero if needed
+                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
+                e.duration = timeString;
+
+                return {...e}
+            })
+
             resolve({
-                total: groupuserslistall.length,
-                result: groupuserslistall
+                total: resultkioskproperty.length,
+                result: resultkioskproperty
             });
             
         } catch (error) {
