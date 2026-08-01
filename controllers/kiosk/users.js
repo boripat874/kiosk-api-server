@@ -324,6 +324,8 @@ exports.userscreate = async (req, res) => {
       transactionid: transactionid_
     });
 
+    await eventlog_kiosk(req, `เพิ่มรายการ ${Username} ผู้เข้าใช้งานใหม่`, "kioskuser");
+
     return {
       status: 200,
       message: "User Add successful",
@@ -341,7 +343,7 @@ exports.userscreate = async (req, res) => {
 
   try {
     const result = await executionPromise;
-    await eventlog_kiosk(req, "เพิ่มรายการผู้เข้าใช้งานใหม่", "kioskuser");
+
     return res.status(200).json(result);
   } catch (error) {
     if (error.status) {

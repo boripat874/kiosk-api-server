@@ -925,6 +925,8 @@ exports.userscreate = async (req, res) => {
                         transactionid: transactionid_
                     })
 
+                    await eventlog(req,`เพิ่มรายการ ${Username} ผู้เข้าใช้งานใหม่`); // เก็บ eventlog
+
                 }).catch((error) => {
                     let ciscoErrorTitle = '';
                     let httpStatus = 402; // ค่า default ที่คุณต้องการ
@@ -988,8 +990,6 @@ exports.userscreate = async (req, res) => {
 
     Promise.race([usersaddLogic, timeoutPromise])
     .then(async(result) => {
-
-        await eventlog(req,"เพิ่มรายการผู้เข้าใช้งานใหม่"); // เก็บ eventlog
 
         return res.status(200).json(result);
     })
