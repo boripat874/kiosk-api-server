@@ -45,9 +45,11 @@
 // console.log("เวลาหลังจาก 1 ชั่วโมง:", new Date(Date.now() + durationInSeconds * 1000));
 // console.log("เวลาหลังจาก 1 ชั่วโมง:", Math.floor(Date.now() / 1000 + durationInSeconds));
 
-const duration = "01:00";
+// const duration = "01:00";
 
-const [hours, minutes] = duration.split(":").map(Number);
-    const totalSeconds = hours * 3600 + minutes * 60;
+// const [hours, minutes] = duration.split(":").map(Number);
+//     const totalSeconds = hours * 3600 + minutes * 60;
 
-    console.log(crypto.randomUUID());
+//     console.log(crypto.randomUUID());
+
+    console.log(0/10);

@@ -192,13 +192,15 @@ exports.reportlistAll = async (req, res) => {
 
             const resultreports = reportlistall.map(report => {
 
-                const seconds = report.duration;
+                const create_at = report.create_at;
+                const expiredate = report.expiredate;
 
-                const hours = Math.floor(seconds / 3600);
-                const minutes = Math.floor((seconds % 3600) / 60);
+                const diffInMs = expiredate - create_at;
 
-                // Format to two digits with leading zero if needed
-                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                // ปัดเศษชั่วโมงให้ใกล้เคียงที่สุด
+                const totalHours = diffInMs > 0 ? Math.round(diffInMs / (1000 * 60 * 60)) : 0;
+
+                const timeString = `${String(totalHours).padStart(2, '0')}:00`;
 
                 return {
                     id: report.id,
@@ -215,7 +217,7 @@ exports.reportlistAll = async (req, res) => {
                     user: report.user,
                     phone: report.phone,
                     lastactivedate: report.lastactivedate ? date.format(new Date(report.lastactivedate*1000), "YYYY-MM-DD HH:mm:ss") : "-",
-                    expiredate: date.format(new Date(report.expiredate*1000), "YYYY-MM-DD"),
+                    expiredate: date.format(new Date(report.expiredate*1000), "YYYY-MM-DD HH:mm"),
                     duration: timeString
                 }
             });
