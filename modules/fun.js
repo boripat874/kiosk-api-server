@@ -8,6 +8,13 @@ const jwt = require("jsonwebtoken"); // ใช้สําหรับสร้�
 
 const { DateTime } = require('luxon');
 
+const winston = require('winston');
+require('winston-syslog').Syslog;
+
+const os = require('os');
+
+require("dotenv").config();
+
 // 1. กำหนดเขตเวลาท้องถิ่น (UTC+7)
 const TIMEZONE = 'Asia/Bangkok';
 
@@ -19,6 +26,80 @@ const startOfTodayTimestamp = nowInLocalTime.startOf('day').toSeconds();
 // startOfTodayTimestamp คือ Unix Time ของ 00:00:00 น. วันนี้ (ใน UTC+7)
 
 // const path = require("path");
+
+// ฟังก์ชันดึง IP Address หลักของเครื่อง
+function getLocalIP() {
+    const interfaces = os.networkInterfaces();
+    for (const devName in interfaces) {
+        const iface = interfaces[devName];
+        for (let i = 0; i < iface.length; i++) {
+            const alias = iface[i];
+            // กรองหา IPv4 ที่ไม่ใช่ loopback (127.0.0.1)
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                return alias.address;
+            }
+        }
+    }
+    return '127.0.0.1'; // ค่าเริ่มต้นถ้าหาไม่เจอ
+}
+
+// ใช้งาน:
+const currentIP = getLocalIP();
+
+const cefFormatter = winston.format.printf((info) => {
+    // แยกส่วนประกอบ
+    // info.message จะได้ค่า 'Failed Login Attempt'
+    // ข้อมูลที่เหลือจะอยู่ใน info ตัวเอง
+    const { level, message, timestamp, ...ext } = info;
+
+    // ลบค่าที่ไม่จำเป็นออกจาก ext เพื่อไม่ให้ไปปนกับ CEF Header
+    delete ext.level;
+    delete ext.message;
+    delete ext.timestamp;
+
+    // จัดการ Header (ถ้าใน ext ไม่มี ให้ใช้ค่า default)
+    const vendor = ext.vendor || 'DITTO';
+    const product = ext.product || 'Kiosk WIFI';
+    const version = ext.version || 'V1.0';
+    const eventId = ext.eventId || '100';
+    const eventName = ext.eventName || 'Registration successful.';
+    // const eventName = ext.eventName || message || 'General Event';
+    const severity = ext.severity || '3';
+
+    // ลบ Header keys ออกจาก ext เพื่อเหลือไว้แต่ Extension จริงๆ
+    ['vendor', 'product', 'version', 'severity'].forEach(k => delete ext[k]);
+
+    // Escape และแปลงเป็น String
+    const escapeCEF = (str) => {
+        if (typeof str !== 'string') str = String(str);
+        return str.replace(/\\/g, '\\\\').replace(/=/g, '\\=').replace(/\|/g, '\\|');
+    };
+
+    const extString = Object.entries(ext)
+        .filter(([_, v]) => v !== undefined && v !== null)
+        .map(([k, v]) => `${k}=${escapeCEF(v)}`)
+        .join(' ');
+
+    return `CEF:0|${vendor}|${product}|${version}|${eventId}|${eventName}|${severity}|${extString}`;
+});
+
+//ตั้งค่า Logger
+const logger = winston.createLogger({
+    levels: winston.config.syslog.levels, // เพิ่มส่วนนี้เพื่อให้รู้จักระดับ syslog
+    transports: [
+        new winston.transports.Syslog({
+            host: process.env.SYSLOG_HOST,
+            port: process.env.SYSLOG_PORT,
+            protocol: 'udp4',
+            app_name: 'Kiosk_WIFI',
+            facility: 'local0',
+            format: winston.format.combine(cefFormatter) 
+        }),
+        new winston.transports.Console({
+            format: winston.format.simple()
+        })
+    ]
+});
 
 // ตั้งค่าการจัดเก็บไฟล์
 const storage = ()=>{
@@ -332,3 +413,19 @@ exports.getUTCFormattedDate = function getUTCFormattedDate(dateObj) {
   // สำหรับการทดลอง ให้ใช้ toISOString() ไปก่อน
   return dateObj.toISOString(); 
 };
+
+exports.sendlogArcSight = async function sendlog(title,eventId,severity,payload = {}) {
+
+  logger.warning(title, {
+    vendor: 'DITTO',
+    product: 'Kiosk WIFI',
+    eventName: title,
+    severity: severity,
+    eventId: eventId, // ใช้ eventId จาก parameter ที่ส่งเข้ามา
+    src: currentIP,   // ดึง IP ล่าสุด
+    ...payload        // นำ property ทั้งหมดใน payload มากระจายใส่ใน object นี้
+  });
+
+  // แสดงผลใน Console เพื่อให้คุณตรวจสอบได้
+  console.log(`[${new Date().toLocaleTimeString()}] Sent log count: ${logCount}`);
+}

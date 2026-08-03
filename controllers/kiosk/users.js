@@ -380,7 +380,26 @@ exports.userget = async (req, res) => {
             const nowInLocalTime = Math.floor(Date.now() / 1000);
 
             // console.log("nowInLocalTime: ", nowInLocalTime);
-            const nowDate = new Date();
+            const now_ = new Date();
+
+            const startOfDay = Math.floor(new Date(now_.getFullYear(), now_.getMonth(), now_.getDate(), 0, 0, 0).getTime() / 1000);
+            const endOfDay = Math.floor(new Date(now_.getFullYear(), now_.getMonth(), now_.getDate(), 23, 59, 59).getTime() / 1000);
+
+
+            const userDatanot = await db("registerinfo")
+            .select("*")
+            .where("status", "active")
+            .andWhere(function() {
+                this.where("idcardnumber", `${searchUser}`)
+                this.orWhere("passportnumber", `${searchUser}`)
+            })
+            .whereBetween("create_at", ">", [startOfDay, endOfDay])
+            .orderBy("create_at","desc")
+            .first();
+
+            if(!userDatanot){
+              return resolve({message: "User not found" });
+            }
 
             const userData = await db("registerinfo")
             .select("*")
@@ -397,7 +416,7 @@ exports.userget = async (req, res) => {
            // let lastactivedate = userData ? userData.lastactivedate : null;
 
             if(!userData){
-              return resolve({message: "User not found" });
+              return resolve({message: "This user is account has expired." });
             }
 
             // console.log("userData create_at: ", userData.create_at);
