@@ -437,7 +437,7 @@ exports.usersImport = async (req, res) => {
 
                         usersToInsert.push({
                             id : uuid(),
-                            routerid : user.routerid,
+                            routerid : user.routerid || "0",
                             ugroupid,
                             visitortype: user.visitortype || "-",
                             name: user.name,
@@ -749,7 +749,7 @@ exports.userscreate = async (req, res) => {
             //     return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
             // }
 
-            console.log("body >>", req.body);
+            // console.log("body >>", req.body);
 
             let phoneNumber = "+66" + phone.slice(1, 10);
 
@@ -758,43 +758,43 @@ exports.userscreate = async (req, res) => {
             const startOfDay = Math.floor(new Date(now_Oldaccount.getFullYear(), now_Oldaccount.getMonth(), now_Oldaccount.getDate(), 0, 0, 0).getTime() / 1000);
             const endOfDay = Math.floor(new Date(now_Oldaccount.getFullYear(), now_Oldaccount.getMonth(), now_Oldaccount.getDate(), 23, 59, 59).getTime() / 1000);
 
-            const Oldaccount = await db("registerinfo")
-            .select("*")
-            .where("status", "active")
-            .whereBetween("expiredate", [startOfDay, endOfDay])
-            // .where("idcardnumber", idcardnumber)
-            // .orWhere("passportnumber", passportnumber)
-            .andWhere(function() {
-            // ใช้ Grouping (วงเล็บ) เพื่อครอบเงื่อนไข ID Card หรือ Passport
-            // และเช็คว่าตัวแปรต้องไม่เป็น null หรือ undefined
-            if (idcardnumber || idcardnumber != "") {
+            // const Oldaccount = await db("registerinfo")
+            // .select("*")
+            // .where("status", "active")
+            // .whereBetween("expiredate", [startOfDay, endOfDay])
+            // // .where("idcardnumber", idcardnumber)
+            // // .orWhere("passportnumber", passportnumber)
+            // .andWhere(function() {
+            // // ใช้ Grouping (วงเล็บ) เพื่อครอบเงื่อนไข ID Card หรือ Passport
+            // // และเช็คว่าตัวแปรต้องไม่เป็น null หรือ undefined
+            // if (idcardnumber || idcardnumber != "") {
 
-                this.where("idcardnumber", idcardnumber);
+            //     this.where("idcardnumber", idcardnumber);
 
-            }else if (passportnumber || passportnumber != "") {
+            // }else if (passportnumber || passportnumber != "") {
 
-                // ถ้ามี idcardnumber มาก่อนหน้า ให้ใช้ orWhere 
-                // แต่ถ้าไม่มี (กรณี idcardnumber เป็น null) ให้ใช้ where ปกติ
-                this.where("passportnumber", passportnumber);
+            //     // ถ้ามี idcardnumber มาก่อนหน้า ให้ใช้ orWhere 
+            //     // แต่ถ้าไม่มี (กรณี idcardnumber เป็น null) ให้ใช้ where ปกติ
+            //     this.where("passportnumber", passportnumber);
                 
-            }
+            // }
             // กรณีที่ทั้งคู่เป็น null จะทำให้ query ส่วนนี้ว่างเปล่า 
             // ซึ่งปลอดภัยกว่าการไป match กับค่า null ใน database
-            })
-            .orderBy("create_at", "desc")
-            .first();
+            // })
+            // .orderBy("create_at", "desc")
+            // .first();
 
-            if(Oldaccount){
+            // if(Oldaccount){
 
-                return resolve({
+            //     return resolve({
 
-                    status: 201,
-                    message: "User already exists",
-                    user: Oldaccount.user,
-                    password: Oldaccount.password
-                })
+            //         status: 201,
+            //         message: "User already exists",
+            //         user: Oldaccount.user,
+            //         password: Oldaccount.password
+            //     })
 
-            }
+            // }
 
             var Username = await createUniqueIdUesr();
 
@@ -1039,7 +1039,11 @@ exports.userscreate = async (req, res) => {
     Promise.race([usersaddLogic, timeoutPromise])
     .then(async(result) => {
 
-        return res.status(200).json(result);
+        if(result.status === 200) {
+            return res.status(200).json(result);
+        }else if(result.status === 201) {
+            return res.status(201).json(result);
+        }
     })
     .catch((error) => {
         
