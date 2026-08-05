@@ -375,7 +375,6 @@ exports.createUniqueIdUesr = async function () {
             date_time: Math.floor(Date.now() / 1000)
         });
 
-
       } else {
         // await db("runnumber")
         //   .insert({

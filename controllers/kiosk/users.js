@@ -232,8 +232,10 @@ exports.userscreate = async (req, res) => {
 
     // คำนวณวันที่สำหรับ Cisco
     const durationInMilliseconds = durationTime * 1000;
-    const startDateTime = date.format(new Date(), "MM/DD/YYYY HH:mm");
-    const endDateTime = date.format(new Date(Date.now() + durationInMilliseconds), "MM/DD/YYYY HH:mm");
+    const dateStart = new Date()
+    const dateEnd = new Date(dateStart.getTime() + durationInMilliseconds);
+    const startDateTime = date.format(dateStart, "MM/DD/YYYY HH:mm");
+    const endDateTime = date.format(dateEnd, "MM/DD/YYYY HH:mm");
 
     const startDate = new Date();
     const dateOnlyStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
@@ -341,7 +343,9 @@ exports.userscreate = async (req, res) => {
       message: "User Add successful",
       user: Username,
       password: password,
-      duration: formattedTime
+      duration: formattedTime,
+      created_at: date.format(dateStart, "YYYY-MM-DD HH:mm"),
+      expiredate: date.format(dateEnd, "YYYY-MM-DD HH:mm")
     };
   })();
 
