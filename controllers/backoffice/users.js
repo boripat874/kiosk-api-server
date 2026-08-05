@@ -1669,7 +1669,7 @@ exports.groupusersdelete = async (req, res) => {
                 return reject({ status: 402, message: "ugroupid not required" });
             }
 
-            await db("registergroupinfo").where({ ugroupid }).then((rows) => {
+            await db("registergroupinfo").where({ ugroupid }).then(async (rows) => {
                 if (rows.length === 0) {
                     return reject({ status: 402, message: "GroupUser not found." });
                 }else{
