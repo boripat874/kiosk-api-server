@@ -352,7 +352,7 @@ exports.createUniqueIdUesr = async function () {
   // ใช้ startOfTodayTimestamp ที่คำนวณไว้ข้างบน
   const rowsUpdated = await db("runnumber")
       .where({id: "kiosknumber"})
-      .andWhere("date_time", "<", midnightToday) // <--- แก้ไขเงื่อนไขตรงนี้
+      .andWhere("date_time", "<", Math.floor(midnightToday.getTime() / 1000)) // <--- แก้ไขเงื่อนไขตรงนี้
       .update({
           number: 0,
           // อัปเดต date_time ให้เป็นเวลาปัจจุบันที่รีเซ็ต
