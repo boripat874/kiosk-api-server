@@ -299,6 +299,8 @@ exports.usersImport = async (req, res) => {
                     // });
                     validationErrors.push(`User #${userIndex}: duration not required or duration format Invalid`)
                 }
+
+                let phoneNumber = "+66" + phone.slice(1, 10);
                 // Add more specific validations if needed (e.g., format checks)
 
                  var Username = await createUniqueIdUesr();
@@ -360,7 +362,7 @@ exports.usersImport = async (req, res) => {
                                     "lastName":user.surname,
                                     "notificationLanguage":"English",
                                     "password":user.password,
-                                    "phoneNumber":user.phone,
+                                    "phoneNumber": phoneNumber,
                                     "userName":Username,
                                     "smsServiceProvider":"Global Default"
                             },
