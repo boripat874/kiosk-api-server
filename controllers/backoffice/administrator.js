@@ -201,7 +201,7 @@ exports.administratorupdate = async (req, res) => {
               }
             });
 
-            const user_old = db("userinfo")
+            const user_old = await db("userinfo")
               .select("*")
               .whereNot({userid})
               .andWhere({username})
