@@ -1325,7 +1325,7 @@ exports.usersdelete = async (req, res) => {
             await db("registerinfo")
               .select("*")
               .where({ id })
-              .then((rows) => {
+              .then(async (rows) => {
                 if (rows.length === 0) {
                   return reject({ status: 402, message: "User not found." });
                 }else{

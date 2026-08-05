@@ -259,7 +259,7 @@ exports.administratordelete = async (req, res) => {
             const { userid } = req.body;
 
             await db("userinfo").where({ userid })
-            .then((rows) => {
+            .then(async (rows) => {
 
                 if (rows.length === 0) {
                     return reject({ status: 402, message: "Administrator not found." });
