@@ -1249,7 +1249,7 @@ exports.usersupdate = async (req, res) => {
 
             await db("registerinfo").where({ id }).update({ update_at: Date.parse(new Date())/1000 });
 
-            await eventlog(req, `แก้ไขรายการ ${rows[0].user} ผู้เข้าใช้งาน`); // เก็บ eventlog
+            await eventlog(req, `แก้ไขรายการ ${Username} ผู้เข้าใช้งาน`); // เก็บ eventlog
 
             await sendlogArcSight("Edit User successful.",102,3,{
                 Username: Username
@@ -1479,6 +1479,15 @@ exports.groupuserscreate = async (req, res) => {
         });
       }
 
+      const existingGroup = await db("registergroupinfo")
+        .select("*")
+        .where({ groupname })
+        .first();
+
+      if (existingGroup) {
+        return resolve({ status: 201, message: "Group name already exists." });
+      }
+
     //   const timeString = "02:00";
     //   const [hours, minutes] = timeString.split(":").map(Number);
     //   const totalSeconds = hours * 3600 + minutes * 60;
@@ -1494,6 +1503,11 @@ exports.groupuserscreate = async (req, res) => {
         duration: totalSeconds,
       });
 
+      await eventlog(req, `เพิ่มรายการ ${groupname} กลุ่มผู้เข้าใช้งาน`); // เก็บ eventlog
+      await sendlogArcSight("Add GroupUsers successful.",107,3,{
+          groupname: groupname
+      });
+
       //   console.log(Date.parse(expirationdate));
 
       resolve({ message: "GroupUsers Add successful" });
@@ -1504,9 +1518,13 @@ exports.groupuserscreate = async (req, res) => {
 
   Promise.race([usersgroupusersaddLogic, timeoutPromise])
     .then(async (result) => {
-      await eventlog(req, "เพิ่มรายการกลุ่มผู้เข้าใช้งาน"); // เก็บ eventlog
+      
 
-      res.status(200).json(result);
+      if (result.status === 201) {
+        return res.status(201).json(result);
+      } else {
+        return res.status(200).json(result);
+      }
     })
     .catch((error) => {
       if (error.status) {
@@ -1558,8 +1576,19 @@ exports.groupusersupdate = async (req, res) => {
                 if (rows.length === 0) {
                     return reject({ status: 402, message: "GroupUser not found." });
                 }
+
             });
 
+            const nameGroup = await db("registergroupinfo")
+                .select("groupname")
+                .where({ groupname })
+                .first();
+
+            if(nameGroup) {
+
+                return resolve({ status: 201, message: "Group name is the same as the existing one." });
+            }
+            
             const updateData = {};
 
             if (groupname !== undefined) updateData.groupname = groupname;
@@ -1581,6 +1610,11 @@ exports.groupusersupdate = async (req, res) => {
                 .where({ ugroupid: ugroupid }) // Target the group row by its ugroupid
                 .update(updateData);
 
+            await eventlog(req,`แก้ไขรายการ ${groupname} กลุ่มผู้เข้าใช้งาน`); // เก็บ eventlog
+            await sendlogArcSight("Edit GroupUsers successful.",108,3,{
+                groupname: groupname
+            });
+
             resolve({ message: "GroupUser update successful"});
 
         } catch (error) {
@@ -1595,8 +1629,11 @@ exports.groupusersupdate = async (req, res) => {
     Promise.race([groupusersupdateLogic, timeoutPromise])
         .then(async(result) => {
 
-            await eventlog(req,"แก้ไขรายการกลุ่มผู้เข้าใช้งาน"); // เก็บ eventlog
-            res.status(200).json(result);
+            if(result.status === 201) {
+                return res.status(201).json(result);
+            }else{
+                res.status(200).json(result);
+            }
         })
         .catch((error) => {
             if (error.status) {
@@ -1635,6 +1672,11 @@ exports.groupusersdelete = async (req, res) => {
             await db("registergroupinfo").where({ ugroupid }).then((rows) => {
                 if (rows.length === 0) {
                     return reject({ status: 402, message: "GroupUser not found." });
+                }else{
+                    await eventlog(req,`ลบรายการ ${rows[0].groupname} กลุ่มผู้เข้าใช้งาน`); // เก็บ eventlog
+                    await sendlogArcSight("Delete GroupUsers successful.",109,3,{
+                        groupname: rows[0].groupname
+                    });
                 }
             });
 
@@ -1645,8 +1687,6 @@ exports.groupusersdelete = async (req, res) => {
                     status: "inactive",
                     update_at: Date.parse(new Date())/1000,
                  });
-
-
 
             resolve({ message: "GroupUser deleted successfully" });
         } catch (error) {

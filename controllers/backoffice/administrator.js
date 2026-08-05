@@ -14,7 +14,8 @@ const {
     validateApiKey,
     deleteUploadedFile,
     eventlog,
-    checkAuthorizetion
+    checkAuthorizetion,
+    sendlogArcSight
 } = require("../../modules/fun");
 
 require("dotenv").config();
@@ -104,6 +105,15 @@ exports.administratorcreate = async (req, res) => {
 
       const { name, username, password, level, remark } = req.body;
 
+      const user_old =  await db("userinfo")
+        .select("*")
+        .where({"username": username})
+        .first();
+
+      if(user_old){
+        resolve({ status: 201, message: "username already exists" });
+      }
+
       if (!username) {
         reject({ status: 402, message: "username not required" });
       }
@@ -139,8 +149,15 @@ exports.administratorcreate = async (req, res) => {
     .then(async (result) => {
 
       // await eventlog(req, "เพิ่มรายการ Administrator ใหม่"); // เก็บ eventlog
+      if(result.status == 201){
 
-      res.status(200).json(result);
+        res.status(201).json(result);
+
+      }else{
+
+        res.status(200).json(result);
+      }
+
     })
     .catch((error) => {
       if (error.status) {
@@ -178,9 +195,13 @@ exports.administratorupdate = async (req, res) => {
             } = req.body;
 
             await db("userinfo").where({ userid }).then((rows) => {
-                if (rows.length === 0) {
-                    return reject({ status: 402, message: "Administrator not found." });
-                }
+              if (rows.length === 0) {
+                  return reject({ status: 402, message: "Administrator not found." });
+              }
+
+              if(rows[0].username == username){
+                return resolve({ status: 201, message: "username already exists." });
+              }
             });
 
             if (name) {
@@ -226,7 +247,12 @@ exports.administratorupdate = async (req, res) => {
 
             // await eventlog(req,"แก้ไขรายการ Administrator"); // เก็บ eventlog
 
-            res.status(200).json(result);
+            if(result.status == 201){
+
+              res.status(201).json(result);
+            }else{
+              res.status(200).json(result);
+            }
         })
         .catch((error) => {
 
