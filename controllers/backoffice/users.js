@@ -1482,6 +1482,7 @@ exports.groupuserscreate = async (req, res) => {
       const existingGroup = await db("registergroupinfo")
         .select("*")
         .where({ groupname })
+        .andWhere({status: "active"})
         .first();
 
       if (existingGroup) {
@@ -1583,6 +1584,7 @@ exports.groupusersupdate = async (req, res) => {
                 .select("*")
                 .whereNot({ugroupid})
                 .andWhere({ groupname })
+                .andWhere({status: "active"})
                 .first();
 
             if(nameGroup) {

@@ -108,6 +108,7 @@ exports.administratorcreate = async (req, res) => {
       const user_old =  await db("userinfo")
         .select("*")
         .where({"username": username})
+        .andWhere({status: "active"})
         .first();
 
       if(user_old){
@@ -204,6 +205,7 @@ exports.administratorupdate = async (req, res) => {
               .select("*")
               .whereNot({userid})
               .andWhere({username})
+              .andWhere({status: "active"})
               .first();
 
             if(user_old){
