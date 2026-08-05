@@ -300,7 +300,7 @@ exports.usersImport = async (req, res) => {
                     validationErrors.push(`User #${userIndex}: duration not required or duration format Invalid`)
                 }
 
-                let phoneNumber = "+66" + phone.slice(1, 10);
+                let phoneNumber = "+66" + user.phone.slice(1, 10);
                 // Add more specific validations if needed (e.g., format checks)
 
                  var Username = await createUniqueIdUesr();
