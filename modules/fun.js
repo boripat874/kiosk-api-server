@@ -346,10 +346,13 @@ exports.createUniqueIdUesr = async function () {
 
   newId = (timedate.getFullYear() % 100) + timedate.getMonth() + timedate.getDate() + timedate.getHours() + timedate.getMinutes() + randomString;
 
+  const midnightToday = new Date(timedate);
+  midnightToday.setHours(0, 0, 0, 0);
+
   // ใช้ startOfTodayTimestamp ที่คำนวณไว้ข้างบน
   const rowsUpdated = await db("runnumber")
       .where({id: "kiosknumber"})
-      .andWhere("date_time", "<", startOfTodayTimestamp) // <--- แก้ไขเงื่อนไขตรงนี้
+      .andWhere("date_time", "<", midnightToday) // <--- แก้ไขเงื่อนไขตรงนี้
       .update({
           number: 0,
           // อัปเดต date_time ให้เป็นเวลาปัจจุบันที่รีเซ็ต
