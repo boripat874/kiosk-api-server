@@ -238,9 +238,26 @@ exports.usersImport = async (req, res) => {
 
             const { ugroupid, users } = req.body;
 
+            const transactionid_ = req.body.transactionid || "";
+
+            if(transactionid_ == null || transactionid_ == ""){
+                return reject({status: 402, message: "transactionid not found"});
+            }
+
+            const db_transactionid = await db
+            .select("transactionid")
+            .from("registerinfo")
+            .where({ transactionid: transactionid_ });
+
+            if (db_transactionid.length) {
+
+                return reject({status: 402, message: "You have already completed this transaction."});
+            }
+
             if (!ugroupid) {
                 return reject({ status: 402, message: "ugroupid is required" });
             }
+            
             if (!users || !Array.isArray(users) || users.length === 0) {
                 return reject({ status: 402, message: "users array is required and cannot be empty" });
             }
@@ -274,26 +291,199 @@ exports.usersImport = async (req, res) => {
                 if (!user.idcardnumber && !user.passportnumber) {
                     validationErrors.push(`User #${userIndex}: idcardnumber or passportnumber is required.`);
                 }
+
+                if (!user.expiredate === undefined || isNaN(Date.parse(`2000-01-01 ${user.expiredate}`))) {
+                    // return reject({
+                    //     status: 402,
+                    //     message: "duration not required or duration format Invalid",
+                    // });
+                    validationErrors.push(`User #${userIndex}: duration not required or duration format Invalid`)
+                }
                 // Add more specific validations if needed (e.g., format checks)
+
+                 var Username = await createUniqueIdUesr();
+
+                const [hours, minutes] = (user.expiredate).split(":").map(Number);
+                const totalSeconds = hours * 3600 + minutes * 60;
+
+                const durationInMilliseconds = totalSeconds * 1000;
+
+                // A. กำหนดตัวแปรวันที่ตามที่คุณทำไว้
+                const startDateTime = date.format((new Date()), "MM/DD/YYYY HH:mm"); // วันที่เริ่มต้น
+                // const endDateTime = date.format((new Date(expiredate)), "MM/DD/YYYY 23:59"); // วันที่สิ้นสุด
+                const endDateTime = date.format(new Date(Date.now() + durationInMilliseconds), "MM/DD/YYYY HH:mm");
+
+                const startDate =  new Date(); // New Date() คือ วันที่เริ่มต้น
+
+                // B. สร้าง Date Object ที่มีแต่ วัน ที่เราสนใจ (00:00:00 น. ของวันนั้นๆ)
+
+                // 1. วันที่เริ่มต้น (เที่ยงคืนของวันนี้)
+                const dateOnlyStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+
+                // 2. วันที่สิ้นสุด (เที่ยงคืนของวันหมดอายุ)
+                // ใช้ endDateTime ในการสร้างวันสิ้นสุด แต่ให้ตั้งเวลาเป็น 00:00:00 น. 
+                // โดยการสร้างจากองค์ประกอบ (Year, Month, Day) แทนการใช้สตริง
+                const endDateRef = new Date(Date.now() + durationInMilliseconds); 
+                const dateOnlyEnd = new Date(endDateRef.getFullYear(), endDateRef.getMonth(), endDateRef.getDate());
+
+                // C. คำนวณผลต่างระหว่างวันที่ (00:00:00 น. ทั้งคู่)
+
+                // ผลต่างเป็นมิลลิวินาทีระหว่างเที่ยงคืนถึงเที่ยงคืน
+                const normalizedTimeDifference = dateOnlyEnd.getTime() - dateOnlyStart.getTime();
+
+                // แปลงเป็นจำนวนวันเต็ม (ไม่ต้องปัดขึ้น/ลง เพราะเป็นผลต่างระหว่างเที่ยงคืนถึงเที่ยงคืน)
+                // ผลลัพธ์ที่ได้คือ 'จำนวนคืน' หรือ 'จำนวนวันเต็มที่ผ่านไประหว่างสองวัน'
+                const daysBetween = normalizedTimeDifference / (1000 * 3600 * 24); 
+
+                // D. คำนวณ validDays
+                // validDays คือ จำนวนวันทั้งหมดที่สิทธิ์นี้ครอบคลุม (รวมวันเริ่มต้น)
+                const calculatedValidDays = daysBetween <= 0 ? 1 : daysBetween;
+
 
                 // If no validation errors for this user, prepare the object
                 if (validationErrors.length === 0) {
-                    usersToInsert.push({
-                        id: uuid(), // Generate a unique ID for each user
-                        routerid: user.routerid || "0", // Assuming routerid might be optional
-                        ugroupid: ugroupid, // Assign the common group ID
-                        visitortype: user.visitortype || "-", // Use provided or null
-                        name: user.name,
-                        surname: user.surname,
-                        password: user.password,
-                        idcardnumber: user.idcardnumber || null,
-                        passportnumber: user.passportnumber || null,
-                        phone: user.phone || null,
-                        create_at: nowTimestamp,
-                        update_at: nowTimestamp, // Set update_at on creation as well
-                        // lastactivedate: nowTimestamp, // Assume user is active upon import
-                        status: "active" // Default status
-                    });
+
+                    const CiscoUserBody = {
+                        "GuestUser": {
+                            "guestType": "Internet_Cafe_Hours",
+                            "portalId": process.env.PORTAl_ID,
+                            "guestAccessInfo": {
+                                "validDays": calculatedValidDays,
+                                "fromDate": startDateTime,
+                                "toDate": endDateTime,
+                                "location": "Bangkok",
+                            },
+                            "guestInfo":{
+                                    "company":"Cisco",
+                                    "emailAddress":"zoo@cisco.com",
+                                    "firstName":user.name,
+                                    "lastName":user.surname,
+                                    "notificationLanguage":"English",
+                                    "password":user.password,
+                                    "phoneNumber":user.phone,
+                                    "userName":Username,
+                                    "smsServiceProvider":"Global Default"
+                            },
+                        }
+                    };
+
+                    // ส่งคำขอสร้าง User
+                    await axios.post(`https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser`,
+                        CiscoUserBody,
+                        AuthCisco
+                    )
+                    .then((response) => {
+
+                        // console.log(response.data);
+                        
+                    }).catch((error) => {
+
+                        console.log(error.response.data.ERSResponse.messages[0].title);
+
+                        let ciscoErrorTitle = '';
+                        let httpStatus = 402; // ค่า default ที่คุณต้องการ
+
+                        // 1. ตรวจสอบว่ามี response error จาก Cisco/Axios หรือไม่
+                        if (error.response) {
+                            
+                            httpStatus = error.response.status; // ดึง HTTP Status จริง (เช่น 400)
+                            const responseData = error.response.data;
+                            
+                            // 2. พยายามแยก 'title' จากโครงสร้าง response ของ Cisco ERS (JSON)
+                            // โครงสร้าง error JSON มักจะเป็น: { ERSResponse: { messages: [ { title: '...' } ] } }
+                            try {
+                                ciscoErrorTitle = responseData.ERSResponse.messages[0].title;
+                            } catch (parseError) {
+                                // หากโครงสร้าง JSON ไม่เป็นไปตามที่คาดหวัง 
+                                ciscoErrorTitle = `[Failed to parse CISCO message title]`;
+                                console.error("Cisco response structure unexpected:", responseData);
+                            }
+                        }
+
+                        // 3. รวมข้อความทั้งหมดและส่งคืน (reject)
+                        return reject({
+                            status: httpStatus, 
+                            message: `CISCO error: ${ciscoErrorTitle} - ${error.message}` 
+                        });
+                    })
+
+                    // ดึง routerid
+                    await axios.get(
+                        `https://${process.env.CISCO_IP}:${process.env.CISCO_POST}/ers/config/guestuser/name/${Username}`,
+                        AuthCisco // Correctly passed as the second argument
+                    )
+                    .then(async(Usesresponse) => {
+                        
+                        const searchResult = Usesresponse.data;
+
+                        // console.log(Usesresponse.data);
+
+                        // 1. Check if SearchResult and resources exist and are not empty
+                        if (!searchResult || !searchResult.GuestUser) {
+                            return reject({status: 402, message: "CISCO User not found or Usesresponse data is unexpected." });
+                        }
+
+                        // 2. Safely find the user
+                        const userID = searchResult.GuestUser.id;
+
+                        if(!userID){
+                            return reject({status: 402, message: "CISCO User not found." });
+                        }
+
+                        // const currentDate = new Date();
+                        // currentDate.setDate(currentDate.getDate() + 1)
+
+                        usersToInsert.push({
+                            id : uuid(),
+                            routerid : user.routerid || "0",
+                            ugroupid,
+                            visitortype: user.visitortype || "-",
+                            name: user.name,
+                            surname: user.surname,
+                            user: Username,
+                            password: user.password,
+                            idcardnumber: user.idcardnumber || null,
+                            passportnumber: user.passportnumber || null,
+                            phone: user.phone || null,
+                            expiredate: Math.floor(((Date.now() + durationInMilliseconds) / 1000)),
+                            terminalid: "-",
+                            transactionid: transactionid_
+                        });
+
+                        await eventlog(req,`เพิ่มรายการ ${Username} ผู้เข้าใช้งานใหม่`); // เก็บ eventlog
+                        
+                        await sendlogArcSight("Registration successful.",101,3,{
+                            Username: Username
+                        });
+
+                    }).catch((error) => {
+                        let ciscoErrorTitle = '';
+                        let httpStatus = 402; // ค่า default ที่คุณต้องการ
+
+                        // 1. ตรวจสอบว่ามี response error จาก Cisco/Axios หรือไม่
+                        if (error.response) {
+                            
+                            httpStatus = error.response.status; // ดึง HTTP Status จริง (เช่น 400)
+                            const responseData = error.response.data;
+                            
+                            // 2. พยายามแยก 'title' จากโครงสร้าง response ของ Cisco ERS (JSON)
+                            // โครงสร้าง error JSON มักจะเป็น: { ERSResponse: { messages: [ { title: '...' } ] } }
+                            try {
+                                ciscoErrorTitle = responseData.ERSResponse.messages[0].title;
+                            } catch (parseError) {
+                                // หากโครงสร้าง JSON ไม่เป็นไปตามที่คาดหวัง 
+                                ciscoErrorTitle = `[Failed to parse CISCO message title]`;
+                                console.error("Cisco response structure unexpected:", responseData);
+                            }
+                        }
+
+                        // 3. รวมข้อความทั้งหมดและส่งคืน (reject)
+                        return reject({
+                            status: httpStatus, 
+                            message: `CISCO error: ${ciscoErrorTitle} - ${error.message}` 
+                        });
+                    })
+
                 }
             }
 
@@ -524,7 +714,6 @@ exports.userscreate = async (req, res) => {
                     message: "duration not required or duration format Invalid",
                 });
             }
-
 
             const db_transactionid = await db
             .select("transactionid")
@@ -795,8 +984,9 @@ exports.userscreate = async (req, res) => {
                     })
 
                     await eventlog(req,`เพิ่มรายการ ${Username} ผู้เข้าใช้งานใหม่`); // เก็บ eventlog
+                    
                     await sendlogArcSight("Registration successful.",101,3,{
-                        userName: Username
+                        Username: Username
                     });
 
                 }).catch((error) => {

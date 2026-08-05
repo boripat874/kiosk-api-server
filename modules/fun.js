@@ -425,7 +425,4 @@ exports.sendlogArcSight = async function sendlog(title,eventId,severity,payload 
     src: currentIP,   // ดึง IP ล่าสุด
     ...payload        // นำ property ทั้งหมดใน payload มากระจายใส่ใน object นี้
   });
-
-  // แสดงผลใน Console เพื่อให้คุณตรวจสอบได้
-  console.log(`[${new Date().toLocaleTimeString()}] Sent log count: ${logCount}`);
 }

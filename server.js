@@ -12,6 +12,10 @@ const path = require('path');
 
 require("dotenv").config(); // Load environment variables
 
+const {
+    sendlogArcSight
+} = require("./modules/fun");
+
 // Use the XML body parser middleware
 app.use(xmlparser());
 
@@ -19,7 +23,6 @@ const options = {
   key: fs.readFileSync(path.join(__dirname, 'private.key')),
   cert: fs.readFileSync(path.join(__dirname, 'certificate.crt'))
 };
-
 
 const swaggerDocument = YAML.load('./API_KIOSK_System.yml');
 
@@ -38,6 +41,25 @@ const xml2js = require('xml2js');
 const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
 const axios = require('axios');
+
+app.get('/testlogarcsight', async (req, res) => {
+    try {
+        // 2. ใส่ await หน้าฟังก์ชันที่เป็น Promise
+        await sendlogArcSight("Registration successful.", 101, 3, {
+            userName: 'zoo26830010'
+        });
+
+        return res.json({
+            msg: "send log succeed"
+        });
+        
+    } catch (error) {
+        // 3. ใช้ error.message เพื่อให้ส่งข้อความ Error ออกมาแบบ readable JSON
+        return res.status(500).json({
+            msg: error.message || error
+        });
+    }
+});
 
 app.get('/webauth/login', (req, res) => {
     // แสดง Log บน Console เมื่อมีผู้ใช้งานถูก Redirect มาที่หน้านี้

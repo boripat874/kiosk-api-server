@@ -20,7 +20,8 @@ const {
     deleteUploadedFile,
     createUniqueIdUesr,
     createUniqueIdPassword,
-    eventlog_kiosk
+    eventlog_kiosk,
+    sendlogArcSight
 } = require("../../modules/fun");
 const { default: id } = require("date-and-time/locale/id");
 
@@ -324,7 +325,16 @@ exports.userscreate = async (req, res) => {
       transactionid: transactionid_
     });
 
-    await eventlog_kiosk(req, `เพิ่มรายการ ${Username} ผู้เข้าใช้งานใหม่`, "kioskuser");
+    const kioskuser = await db("kioskproperty").select("kioskid").where("terminalid",terminalid_).first();
+    
+    if(kioskuser){
+      
+      await eventlog_kiosk(req, `เพิ่มรายการ ${Username} ผู้เข้าใช้งานใหม่`, kioskuser.kioskid);
+    }
+                        
+    await sendlogArcSight("Registration successful.",101,3,{
+        Username: Username
+    });
 
     return {
       status: 200,
