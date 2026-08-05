@@ -879,7 +879,7 @@ exports.userscreate = async (req, res) => {
                     }
                 };
 
-                console.log(CiscoUserBody);
+                // console.log(CiscoUserBody);
 
                 // const CiscoUserBody = 
                 // `<guestAccessInfo>
@@ -968,7 +968,7 @@ exports.userscreate = async (req, res) => {
 
                     await db("registerinfo").insert({
                         id : uuid(),
-                        routerid : userID,
+                        routerid : userID || '0',
                         ugroupid,
                         visitortype,
                         name,
