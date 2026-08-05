@@ -111,7 +111,7 @@ exports.administratorcreate = async (req, res) => {
         .first();
 
       if(user_old){
-        resolve({ status: 201, message: "username already exists" });
+        return resolve({ status: 201, message: "username already exists" });
       }
 
       if (!username) {
