@@ -217,7 +217,9 @@ exports.userscreate = async (req, res) => {
           message: "User already exists",
           user: Oldaccount.user,
           password: Oldaccount.password,
-          duration: formattedTime // เวลาที่เหลืออยู่จริง
+          duration: formattedTime, // เวลาที่เหลืออยู่จริง
+          created_at: date.format(Oldaccount.create_at, "YYYY-MM-DD HH:mm"),
+          expiredate: date.format(Oldaccount.expiredate, "YYYY-MM-DD HH:mm")
         };
       }
 
