@@ -200,7 +200,11 @@ exports.administratorupdate = async (req, res) => {
               }
             });
 
-            const user_old = db("userinfo").whereNot({userid}).andWhere({username}).first();
+            const user_old = db("userinfo")
+              .select("*")
+              .whereNot({userid})
+              .andWhere({username})
+              .first();
 
             if(user_old){
               return resolve({ status: 201, message: "username already exists." });
