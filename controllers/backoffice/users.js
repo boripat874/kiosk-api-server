@@ -546,8 +546,6 @@ exports.usersImport = async (req, res) => {
                 handleError(error, res); // Use generic error handler
             }
         });
-
-
 };
 
 // Users List All
@@ -909,7 +907,7 @@ exports.userscreate = async (req, res) => {
                 )
                 .then((response) => {
 
-                    // console.log(response.data);
+                    console.log(response.data);
                     
                 }).catch((error) => {
 
