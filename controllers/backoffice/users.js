@@ -1580,8 +1580,9 @@ exports.groupusersupdate = async (req, res) => {
             });
 
             const nameGroup = await db("registergroupinfo")
-                .select("groupname")
-                .where({ groupname })
+                .select("*")
+                .whereNot({ugroupid})
+                .andWhere({ groupname })
                 .first();
 
             if(nameGroup) {

@@ -198,11 +198,13 @@ exports.administratorupdate = async (req, res) => {
               if (rows.length === 0) {
                   return reject({ status: 402, message: "Administrator not found." });
               }
-
-              if(rows[0].username == username){
-                return resolve({ status: 201, message: "username already exists." });
-              }
             });
+
+            const user_old = db("userinfo").whereNot({userid}).andWhere({username}).first();
+
+            if(user_old){
+              return resolve({ status: 201, message: "username already exists." });
+            }
 
             if (name) {
                 await db("userinfo").where({ userid }).update({ name });
