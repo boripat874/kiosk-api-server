@@ -1463,7 +1463,7 @@ exports.groupuserscreate = async (req, res) => {
       // check api key
       await validateApiKey(req);
 
-      // ยีนยันตัวตนการเข้าสู่ระบบ
+      // ยีนยันตัวตนการเข้าสู่ระบบ                                                                                                               
       await checkAuthorizetion(req);
 
       const { groupname, remark, duration } = req.body;
