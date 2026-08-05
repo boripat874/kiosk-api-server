@@ -123,6 +123,12 @@ exports.administratorcreate = async (req, res) => {
         // remark,
       });
 
+      await eventlog(req, `เพิ่มรายการ ${username} Administrator ใหม่`); // เก็บ eventlog
+
+      await sendlogArcSight("Add Administrator successful.",104,3,{
+          Username: username
+      });
+
       resolve({ message: "Administrator Add successful" });
     } catch (error) {
       reject(error);
@@ -132,7 +138,7 @@ exports.administratorcreate = async (req, res) => {
   Promise.race([administratoraddLogic, timeoutPromise])
     .then(async (result) => {
 
-      await eventlog(req, "เพิ่มรายการ Administrator ใหม่"); // เก็บ eventlog
+      // await eventlog(req, "เพิ่มรายการ Administrator ใหม่"); // เก็บ eventlog
 
       res.status(200).json(result);
     })
@@ -201,17 +207,24 @@ exports.administratorupdate = async (req, res) => {
             // if (remark) {
             //     await db("userinfo").where({ userid }).update({ remark });
             // }
+            await eventlog(req, `แก้ไขรายการ ${username} Administrator`); // เก็บ eventlog
+
+            await sendlogArcSight("Edit Administrator successful.",105,3,{
+              Username: username
+            });
 
             resolve({ message: "Administrator Update successful" });
+
         } catch (error) {
-            reject(error);
+
+          reject(error);
         }
         });
 
     Promise.race([administratorupdateLogic, timeoutPromise])
         .then(async(result) => {
 
-            await eventlog(req,"แก้ไขรายการ Administrator"); // เก็บ eventlog
+            // await eventlog(req,"แก้ไขรายการ Administrator"); // เก็บ eventlog
 
             res.status(200).json(result);
         })
@@ -245,9 +258,19 @@ exports.administratordelete = async (req, res) => {
 
             const { userid } = req.body;
 
-            await db("userinfo").where({ userid }).then((rows) => {
+            await db("userinfo").where({ userid })
+            .then((rows) => {
+
                 if (rows.length === 0) {
                     return reject({ status: 402, message: "Administrator not found." });
+                }else{
+
+                  await eventlog(req, `ลบรายการ ${rows[0].username} Administrator`); // เก็บ eventlog
+
+                  await sendlogArcSight("Delete Administrator successful.",106,3,{
+                    Username: rows[0].username
+                  });
+
                 }
             });
 
@@ -267,7 +290,7 @@ exports.administratordelete = async (req, res) => {
     Promise.race([administratordeleteLogic, timeoutPromise])
         .then(async(result) => {
 
-            await eventlog(req,"ลบรายการ Administrator"); // เก็บ eventlog
+            // await eventlog(req,"ลบรายการ Administrator"); // เก็บ eventlog
 
             res.status(200).json(result);
         })

@@ -1249,6 +1249,12 @@ exports.usersupdate = async (req, res) => {
 
             await db("registerinfo").where({ id }).update({ update_at: Date.parse(new Date())/1000 });
 
+            await eventlog(req, `แก้ไขรายการ ${rows[0].user} ผู้เข้าใช้งาน`); // เก็บ eventlog
+
+            await sendlogArcSight("Edit User successful.",102,3,{
+                Username: Username
+            });
+
             return resolve({message: "Users Update successful"});
 
         } catch (error) {
@@ -1261,7 +1267,7 @@ exports.usersupdate = async (req, res) => {
     Promise.race([usersupdateLogic, timeoutPromise])
         .then(async(result) => {
 
-            await eventlog(req,"แก้ไขรายการผู้เข้าใช้งาน"); // เก็บ eventlog
+            // await eventlog(req,"แก้ไขรายการผู้เข้าใช้งาน"); // เก็บ eventlog
 
             return res.status(200).json(result);
         })
@@ -1317,11 +1323,18 @@ exports.usersdelete = async (req, res) => {
             });
 
             await db("registerinfo")
-              .select("id")
+              .select("*")
               .where({ id })
               .then((rows) => {
                 if (rows.length === 0) {
                   return reject({ status: 402, message: "User not found." });
+                }else{
+                    await eventlog(req, `ลบรายการ ${rows[0].user} ผู้เข้าใช้งาน`); // เก็บ eventlog
+
+                    await sendlogArcSight("Delete User successful.",103,3,{
+                        Username: rows[0].user
+                    });
+
                 }
               });
 
@@ -1340,7 +1353,7 @@ exports.usersdelete = async (req, res) => {
     Promise.race([usersdeleteLogic, timeoutPromise])
         .then(async(result) => {
 
-            await eventlog(req,"ลบรายการผู้เข้าใช้งาน"); // เก็บ eventlog
+            
             res.status(200).json(result);
         })
         .catch((error) => {

@@ -401,7 +401,6 @@ exports.userget = async (req, res) => {
             const startOfDay = Math.floor(new Date(now_.getFullYear(), now_.getMonth(), now_.getDate(), 0, 0, 0).getTime() / 1000);
             const endOfDay = Math.floor(new Date(now_.getFullYear(), now_.getMonth(), now_.getDate(), 23, 59, 59).getTime() / 1000);
 
-
             const userDatanot = await db("registerinfo")
             .select("*")
             .where("status", "active")
@@ -409,7 +408,7 @@ exports.userget = async (req, res) => {
                 this.where("idcardnumber", `${searchUser}`)
                 this.orWhere("passportnumber", `${searchUser}`)
             })
-            .whereBetween("create_at", ">", [startOfDay, endOfDay])
+            .andWhere("create_at", ">", startOfDay,)
             .orderBy("create_at","desc")
             .first();
 
