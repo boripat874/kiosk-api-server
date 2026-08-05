@@ -437,7 +437,7 @@ exports.usersImport = async (req, res) => {
 
                         usersToInsert.push({
                             id : uuid(),
-                            routerid : user.routerid || "0",
+                            routerid : userID || "0",
                             ugroupid,
                             visitortype: user.visitortype || "-",
                             name: user.name,
