@@ -218,8 +218,8 @@ exports.userscreate = async (req, res) => {
           user: Oldaccount.user,
           password: Oldaccount.password,
           duration: formattedTime, // เวลาที่เหลืออยู่จริง
-          created_at: date.format(Oldaccount.create_at, "YYYY-MM-DD HH:mm"),
-          expiredate: date.format(Oldaccount.expiredate, "YYYY-MM-DD HH:mm")
+          created_at: date.format(new Date(Number(Oldaccount.create_at) * 1000), "YYYY-MM-DD HH:mm"),
+          expiredate: date.format(new Date(Number(Oldaccount.expiredate) * 1000), "YYYY-MM-DD HH:mm")
         };
       }
 
