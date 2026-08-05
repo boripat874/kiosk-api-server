@@ -346,7 +346,7 @@ exports.createUniqueIdUesr = async function () {
 
   newId = (timedate.getFullYear() % 100) + timedate.getMonth() + timedate.getDate() + timedate.getHours() + timedate.getMinutes() + randomString;
 
-  const midnightToday = new Date(timedate);
+  const midnightToday = new Date();
   midnightToday.setHours(0, 0, 0, 0);
 
   // ใช้ startOfTodayTimestamp ที่คำนวณไว้ข้างบน
