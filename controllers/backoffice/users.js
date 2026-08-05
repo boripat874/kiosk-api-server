@@ -749,6 +749,8 @@ exports.userscreate = async (req, res) => {
             //     return reject({ status: 402, message: "expiredate not required or expiredate format Invalid" });
             // }
 
+            console.log("body >>", req.body);
+
             let phoneNumber = "+66" + phone.slice(1, 10);
 
             const now_Oldaccount = new Date();
