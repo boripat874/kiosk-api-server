@@ -376,7 +376,7 @@ exports.usersImport = async (req, res) => {
                     )
                     .then((response) => {
 
-                        // console.log(response.data);
+                        console.log(response.data);
                         
                     }).catch((error) => {
 
@@ -437,7 +437,7 @@ exports.usersImport = async (req, res) => {
 
                         usersToInsert.push({
                             id : uuid(),
-                            routerid : user.routerid || "0",
+                            routerid : user.routerid,
                             ugroupid,
                             visitortype: user.visitortype || "-",
                             name: user.name,
@@ -970,7 +970,7 @@ exports.userscreate = async (req, res) => {
 
                     await db("registerinfo").insert({
                         id : uuid(),
-                        routerid : userID || "0",
+                        routerid : userID,
                         ugroupid,
                         visitortype,
                         name,
